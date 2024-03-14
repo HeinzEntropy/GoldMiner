@@ -17,7 +17,7 @@ typedef struct mine_location{
 	int x;
 	int y;
 	int size;
-	mine_location * next;
+	struct mine_location * next;
 }Mine_Location;
 
 void loadbackgraound()
@@ -30,15 +30,47 @@ public:
 	Mine();
 	~Mine();
 	void M_loadimage();
+	void M_LocationInit();
+	void create_xysize(int *count);
 
 private:
-	//坐标
+
 	IMAGE img1,img2;
+	//坐标及其大小
 	int x;
 	int y;
 	int size;
 	bool exist;
+	Mine_Location* h = NULL;
+	Mine_Location* r = NULL;
 };
+
+void Mine::create_xysize(int* count)
+{
+	for (Mine_Location* s = h; s->next != NULL; s = s->next)
+	{
+
+	}
+}
+
+void Mine::M_LocationInit()
+{ 
+	Mine_Location* p = (Mine_Location*)malloc(sizeof(Mine_Location));
+	if (h = NULL)
+	{
+		h = p;
+		r = p;
+	}
+	else
+	{
+		r->next = p;
+		r = p;
+	};
+
+	
+
+
+}
 
 void Mine::M_loadimage()
 {
@@ -56,6 +88,9 @@ void Mine::M_loadimage()
 
 Mine::Mine()
 {
+	static int count =0;
+	count+=1;
+	cout << "Count is " << count << endl;
 	x = width / 256 * (rand()%(256+1));
 	y = height / 256 * (rand()%(256-16*3+1)) + height / 16 * 3;
 	size = width / 128 * (rand() % (16 + 1)) + width / 32;
