@@ -31,7 +31,7 @@ public:
 	~Mine();
 	void M_loadimage();
 	void M_LocationInit();
-	void create_xysize(int *count);
+	void create_xysize(int* count, Mine_Location* h);
 
 private:
 
@@ -41,28 +41,37 @@ private:
 	int y;
 	int size;
 	bool exist;
-	Mine_Location* h = NULL;
-	Mine_Location* r = NULL;
+	
 };
 
-void Mine::create_xysize(int* count)
+void Mine::create_xysize(int* count,Mine_Location* h)
 {
-	for (Mine_Location* s = h; s->next != NULL; s = s->next)
+	Mine_Location* s = h;
+	for (int i=0; i<*count ; i++)
 	{
 
 	}
 }
 
 void Mine::M_LocationInit()
-{ 
-	Mine_Location* p = (Mine_Location*)malloc(sizeof(Mine_Location));
-	if (h = NULL)
+{	
+	static Mine_Location* h = NULL;
+	static Mine_Location* r = h;
+	static int count = 0;
+	count += 1;
+	cout << "Count is " << count << endl;
+	Mine_Location* p = new Mine_Location;
+	if (h == NULL)
 	{
+		p->x= width / 256 * (rand() % (256 + 1));
+		p->y= height / 256 * (rand() % (256 - 16 * 3 + 1)) + height / 16 * 3;
+		p->size = width / 128 * (rand() % (16 + 1)) + width / 32;
 		h = p;
 		r = p;
 	}
 	else
 	{
+		create_xysize(&count,h);
 		r->next = p;
 		r = p;
 	};
@@ -88,9 +97,8 @@ void Mine::M_loadimage()
 
 Mine::Mine()
 {
-	static int count =0;
-	count+=1;
-	cout << "Count is " << count << endl;
+	
+	Mine::M_LocationInit();
 	x = width / 256 * (rand()%(256+1));
 	y = height / 256 * (rand()%(256-16*3+1)) + height / 16 * 3;
 	size = width / 128 * (rand() % (16 + 1)) + width / 32;
