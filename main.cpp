@@ -64,7 +64,7 @@ private:
 	}
 }*/
 
-Mine_Location *Mine::M_LocationInit()
+/*Mine_Location* Mine::M_LocationInit()
 {	
 	static Mine_Location* h = nullptr;
 	static Mine_Location* r = h;
@@ -77,6 +77,9 @@ Mine_Location *Mine::M_LocationInit()
 		p->next = nullptr;
 		h = p;
 		r = p;
+		x = p->x;
+		y = p->y;
+		size = p->size;
 	}
 	else
 	{
@@ -97,12 +100,15 @@ Mine_Location *Mine::M_LocationInit()
 		}
 		r->next = p;
 		r = p;
+		x = p->x;
+		y = p->y;
+		size = p->size;
 	};
 	return h;
 	
 
 
-}
+}*/
 
 void Mine::M_loadimage()
 {
@@ -120,10 +126,44 @@ void Mine::M_loadimage()
 
 Mine::Mine()
 {
-	Mine::M_LocationInit();
-	static Mine_Location* s = Mine::M_LocationInit();
-	cout << M_LocationInit()->x<<endl;
-	cout << s->x << endl;
+	static Mine_Location* h = nullptr;
+	static Mine_Location* r = h;
+	Mine_Location* p = new Mine_Location;
+	if (h == nullptr)
+	{
+		p->x = width / 256 * (rand() % (256 + 1));
+		p->y = height / 256 * (rand() % (256 - 16 * 3 + 1)) + height / 16 * 3;
+		p->size = width / 128 * (rand() % (16 + 1)) + width / 32;
+		p->next = nullptr;
+		h = p;
+		r = p;
+		x = p->x;
+		y = p->y;
+		size = p->size;
+	}
+	else
+	{
+
+	create_xysize:
+		Mine_Location* s = h;
+		p->x = width / 256 * (rand() % (256 + 1));
+		p->y = height / 256 * (rand() % (256 - 16 * 3 + 1)) + height / 16 * 3;
+		p->size = width / 128 * (rand() % (16 + 1)) + width / 32;
+		p->next = nullptr;
+		while (s != nullptr)
+		{
+			if (p->x >= s->x && (p->x + p->size) <= (s->x + s->size) && p->y >= s->y && (p->y + p->size) <= (s->y + s->size))
+			{
+				goto create_xysize;
+			}
+			if (s != nullptr)s = s->next;
+		}
+		r->next = p;
+		r = p;
+		x = p->x;
+		y = p->y;
+		size = p->size;
+	};
 	static int Mine_count = 0;
 	Mine_count += 1;
 	cout << "Mine_count is " << Mine_count << endl;
@@ -131,17 +171,6 @@ Mine::Mine()
 	y = height / 256 * (rand()%(256-16*3+1)) + height / 16 * 3;
 	size = width / 128 * (rand() % (16 + 1)) + width / 32;*/
 	exist = true;
-	int count = 0;
-	while (count < Mine_count)
-	{
-		if (count == Mine_count - 1)
-		{
-			x = s->x;
-			y = s->y;
-			size = s->size;
-		};
-		s = s->next;
-	}
 	
 	Mine::M_loadimage();
 	BeginBatchDraw();
