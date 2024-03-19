@@ -34,7 +34,7 @@ public:
 	Mine();
 	~Mine();
 	void M_loadimage();
-	Mine_Location *M_LocationInit();
+	//Mine_Location *M_LocationInit();
 	//void create_xysize(int* count, Mine_Location* h);
 
 private:
