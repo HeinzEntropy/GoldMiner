@@ -50,10 +50,17 @@ private:
 
 void Mine::create_xysize(int* count,Mine_Location* h)
 {
-	Mine_Location* s = h;
-	for (int i=0; i<*count ; i++)
+	Mine_Location *s,*p;
+	create_xysize:
+	p->x = width / 256 * (rand() % (256 + 1));
+	p->y = height / 256 * (rand() % (256 - 16 * 3 + 1)) + height / 16 * 3;
+	p->size = width / 128 * (rand() % (16 + 1)) + width / 32;
+	for (s = h; s->next!=NULL;s=s->next)
 	{
+		if (s->x>=)
+		{
 
+		}
 	}
 }
 
@@ -87,7 +94,7 @@ void Mine::M_LocationInit()
 
 void Mine::M_loadimage()
 {
-	if(Mine::size<width/16)
+	if(Mine::size<width/8)
 	{
 		loadimage(&img1, "./file/images/small_gold_mask.bmp", size, size);
 		loadimage(&img2, "./file/images/small_gold.bmp", size, size);
@@ -126,7 +133,9 @@ int main()
 	putimage(0, 120, imgs + 4);
 
 	//cout <<"RAND_MAX is " << RAND_MAX << endl;
+	BeginBatchDraw();
 	Mine mine[Mine_Quantity];
+	EndBatchDraw();
 	
 
 	while (true)
