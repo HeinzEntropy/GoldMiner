@@ -34,7 +34,7 @@ public:
 	Mine();
 	~Mine();
 	void M_loadimage();
-	void M_LocationInit();
+	Mine_Location *M_LocationInit();
 	//void create_xysize(int* count, Mine_Location* h);
 
 private:
@@ -64,13 +64,10 @@ private:
 	}
 }*/
 
-void Mine::M_LocationInit()
+Mine_Location *Mine::M_LocationInit()
 {	
 	static Mine_Location* h = nullptr;
 	static Mine_Location* r = h;
-	static int count = 0;
-	count += 1;
-	cout << "Count is " << count << endl;
 	Mine_Location* p = new Mine_Location;
 	if (h == nullptr)
 	{
@@ -101,7 +98,7 @@ void Mine::M_LocationInit()
 		r->next = p;
 		r = p;
 	};
-
+	return h;
 	
 
 
@@ -123,12 +120,26 @@ void Mine::M_loadimage()
 
 Mine::Mine()
 {
-	
-	Mine::M_LocationInit();
+	Mine_Location *s=Mine::M_LocationInit();
+	static int Mine_count = 0;
+	Mine_count += 1;
+	cout << "Mine_count is " << Mine_count << endl;
 	x = width / 256 * (rand()%(256+1));
 	y = height / 256 * (rand()%(256-16*3+1)) + height / 16 * 3;
 	size = width / 128 * (rand() % (16 + 1)) + width / 32;
 	exist = true;
+	int count = 0;
+	while (count < Mine_count)
+	{
+		if (count == Mine_count - 1)
+		{
+			x = s->x;
+			y = s->y;
+			size = s->size;
+		};
+		s = s->next;
+	}
+	
 	Mine::M_loadimage();
 	BeginBatchDraw();
 	putimage(x, y, &img1, SRCPAINT);
