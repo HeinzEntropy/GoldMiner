@@ -10,8 +10,12 @@ using namespace std;
 #define height 720
 #define IMGS_QUANTITY 5
 #define PI 3.1415926535
+constexpr auto Mine_Quantity = (const int)10;
 
 IMAGE imgs[IMGS_QUANTITY];
+IMAGE imgbk[11];
+IMAGE img[10];
+IMAGE imgl[3];
 
 typedef struct mine_location{
 	int x;
@@ -90,8 +94,8 @@ void Mine::M_loadimage()
 	}
 	else
 	{
-		loadimage(&img1, "./file/images/big_gold_mask.jpg", size, size);
-		loadimage(&img2, "./file/images/big_gold.jpg", size, size);
+		loadimage(&img1, "./file/images/diamond_mask.png", size/4, size/4);
+		loadimage(&img2, "./file/images/diamond.png", size/4, size/4);
 	}
 }
 
@@ -122,7 +126,7 @@ int main()
 	putimage(0, 120, imgs + 4);
 
 	//cout <<"RAND_MAX is " << RAND_MAX << endl;
-	Mine mine[10];
+	Mine mine[Mine_Quantity];
 	
 
 	while (true)
