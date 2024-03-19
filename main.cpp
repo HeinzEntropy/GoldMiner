@@ -38,7 +38,7 @@ public:
 	//void create_xysize(int* count, Mine_Location* h);
 
 private:
-
+	//创建精灵图和掩码图
 	IMAGE img1,img2;
 	//坐标及其大小
 	int x;
@@ -130,8 +130,10 @@ Mine::Mine()
 	size = width / 128 * (rand() % (16 + 1)) + width / 32;
 	exist = true;
 	Mine::M_loadimage();
+	BeginBatchDraw();
 	putimage(x, y, &img1, SRCPAINT);
 	putimage(x, y, &img2, SRCAND);
+	EndBatchDraw();
 	cout << "Object has been created" << endl;
 }
 
