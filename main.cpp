@@ -120,13 +120,16 @@ void Mine::M_loadimage()
 
 Mine::Mine()
 {
-	Mine_Location *s=Mine::M_LocationInit();
+	Mine::M_LocationInit();
+	static Mine_Location* s = Mine::M_LocationInit();
+	cout << M_LocationInit()->x<<endl;
+	cout << s->x << endl;
 	static int Mine_count = 0;
 	Mine_count += 1;
 	cout << "Mine_count is " << Mine_count << endl;
-	x = width / 256 * (rand()%(256+1));
+	/*x = width / 256 * (rand()%(256+1));
 	y = height / 256 * (rand()%(256-16*3+1)) + height / 16 * 3;
-	size = width / 128 * (rand() % (16 + 1)) + width / 32;
+	size = width / 128 * (rand() % (16 + 1)) + width / 32;*/
 	exist = true;
 	int count = 0;
 	while (count < Mine_count)
