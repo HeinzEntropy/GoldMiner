@@ -96,13 +96,13 @@ Mine::Mine()
 		while (s->next != nullptr)
 		{
 			cout << "New linked list element is generating" << endl;
-			//坐标是否取用的判断条件，为保证矿藏不内嵌不隐藏
-			/*if ((p->x >= s->x && (p->x + p->size) <= (s->x + s->size)) || (p->y >= s->y && (p->y + p->size) <= (s->y + s->size)))
+			//坐标是否取用的判断条件，为保证矿藏不隐藏
+			if (((p->x + p->size) >= s->x && (p->x <= (s->x + s->size))) && (((p->y + p->size) >= s->y && p->y <= (s->y + s->size))))
 			{
 				cout << "Build failed, start regenerate" << endl;
 				goto create_xysize;
-			}*/
-			if ((((p->x + p->size) <= s->x) || (p->x >= (s->x + s->size))) && (((p->y + p->size) <= s->y) || (p->y >= (s->y + s->size))))
+			}
+			/*if ((((p->x + p->size) <= s->x) || (p->x >= (s->x + s->size))) && (((p->y + p->size) <= s->y) || (p->y >= (s->y + s->size))))
 			{
 				cout << "A new linked list element has been generated successfully!" << endl;
 			}
@@ -110,7 +110,7 @@ Mine::Mine()
 			{
 				cout << "Build failed, start regenerate" << endl;
 				goto create_xysize;
-			};
+			};*/
 			
 			if (s != nullptr)s = s->next;
 		}
