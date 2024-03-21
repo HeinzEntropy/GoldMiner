@@ -97,12 +97,21 @@ Mine::Mine()
 		{
 			cout << "New linked list element is generating" << endl;
 			//坐标是否取用的判断条件，为保证矿藏不内嵌不隐藏
-			if ((p->x >= s->x && (p->x + p->size) <= (s->x + s->size)) || (p->y >= s->y && (p->y + p->size) <= (s->y + s->size)))
+			/*if ((p->x >= s->x && (p->x + p->size) <= (s->x + s->size)) || (p->y >= s->y && (p->y + p->size) <= (s->y + s->size)))
 			{
 				cout << "Build failed, start regenerate" << endl;
 				goto create_xysize;
+			}*/
+			if ((((p->x + p->size) <= s->x) || (p->x >= (s->x + s->size))) && (((p->y + p->size) <= s->y) || (p->y >= (s->y + s->size))))
+			{
+				cout << "A new linked list element has been generated successfully!" << endl;
 			}
-			cout << "A new linked list element has been generated successfully!" << endl;
+			else
+			{
+				cout << "Build failed, start regenerate" << endl;
+				goto create_xysize;
+			};
+			
 			if (s != nullptr)s = s->next;
 		}
 		r->next = p;
@@ -123,10 +132,10 @@ Mine::Mine()
 
 	
 	Mine::M_loadimage();
-	BeginBatchDraw();
+	//BeginBatchDraw();
 	putimage(x, y, &img1, SRCPAINT);
 	putimage(x, y, &img2, SRCAND);
-	EndBatchDraw();
+	//EndBatchDraw();
 	cout << "Object has been created" << endl;
 }
 
