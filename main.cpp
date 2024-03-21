@@ -44,6 +44,7 @@ private:
 	int x;
 	int y;
 	int size;
+	int value;
 	bool exist;
 	
 };
@@ -92,12 +93,13 @@ Mine::Mine()
 		p->next = nullptr;
 		while (s->next != nullptr)
 		{
-			cout << "1" << endl;
+			cout << "New linked list element is generating" << endl;
 			if ((p->x >= s->x && (p->x + p->size) <= (s->x + s->size)) || (p->y >= s->y && (p->y + p->size) <= (s->y + s->size)))
 			{
-				cout << "start rerange" << endl;
+				cout << "Build failed, start regenerate" << endl;
 				goto create_xysize;
 			}
+			cout << "A new linked list element has been generated successfully!" << endl;
 			if (s != nullptr)s = s->next;
 		}
 		r->next = p;
@@ -106,14 +108,16 @@ Mine::Mine()
 		y = p->y;
 		size = p->size;
 	};
-	cout << x << " " << y << " " << size << endl;
+	cout << "X is " << x << "," << "Y is " << y << "," << "Its size is " << size << endl;
 	static int Mine_count = 0;
 	Mine_count += 1;
 	cout << "Mine_count is " << Mine_count << endl;
 	/*x = width / 256 * (rand()%(256+1));
 	y = height / 256 * (rand()%(256-16*3+1)) + height / 16 * 3;
 	size = width / 128 * (rand() % (16 + 1)) + width / 32;*/
+	value = size * 10;
 	exist = true;
+
 	
 	Mine::M_loadimage();
 	BeginBatchDraw();
