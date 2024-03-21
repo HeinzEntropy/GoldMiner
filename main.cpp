@@ -96,6 +96,7 @@ Mine::Mine()
 		while (s->next != nullptr)
 		{
 			cout << "New linked list element is generating" << endl;
+			//坐标是否取用的判断条件，为保证矿藏不内嵌不隐藏
 			if ((p->x >= s->x && (p->x + p->size) <= (s->x + s->size)) || (p->y >= s->y && (p->y + p->size) <= (s->y + s->size)))
 			{
 				cout << "Build failed, start regenerate" << endl;
