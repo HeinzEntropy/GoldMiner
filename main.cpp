@@ -44,7 +44,9 @@ private:
 	int x;
 	int y;
 	int size;
+	//矿的价值
 	int value;
+	//矿的存在性
 	bool exist;
 	
 };
