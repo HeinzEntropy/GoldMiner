@@ -28,12 +28,32 @@ void loadbackgraound()
 {
 	loadimage(imgs + 4, "./file/images/level-background-0.jpg", width, height/16*14);
 }
+
+class Hook
+{
+public:
+	Hook();
+	~Hook();
+
+private:
+
+};
+
+Hook::Hook()
+{
+}
+
+Hook::~Hook()
+{
+}
+
 class Mine
 {
 public:
 	Mine();
 	~Mine();
 	void M_loadimage();
+	void M_LocationChange(Mine mine,Hook hook);
 	//Mine_Location *M_LocationInit();
 	//void create_xysize(int* count, Mine_Location* h);
 
@@ -51,7 +71,10 @@ private:
 	
 };
 
+void Mine::M_LocationChange(Mine mine,Hook hook)
+{
 
+}
 
 void Mine::M_loadimage()
 {
@@ -86,7 +109,7 @@ Mine::Mine()
 	}
 	else
 	{
-
+		int count = 0;
 	create_xysize:
 		Mine_Location* s = h;
 		p->x = width / 256 * (rand() % (256 + 1));
@@ -95,7 +118,7 @@ Mine::Mine()
 		p->next = nullptr;
 		while (s->next != nullptr)
 		{
-			cout << "New linked list element is generating" << endl;
+			cout << "New linked list element is generating, "<<"count is "<<++count << endl;
 			//坐标是否取用的判断条件，为保证矿藏不隐藏
 			if (((p->x + p->size) >= s->x && (p->x <= (s->x + s->size))) && (((p->y + p->size) >= s->y && p->y <= (s->y + s->size))))
 			{
