@@ -29,13 +29,21 @@ void loadbackgraound()
 	loadimage(imgs + 4, "./file/images/level-background-0.jpg", width, height/16*14);
 }
 
+enum Hook_Direction
+{
+	left,
+	right
+};
+
 class Hook
 {
 public:
 	Hook();
 	~Hook();
+	void H_Round(Hook hook);
 
-	
+	Hook_Direction hook_direction;
+	double angle;
 	int ex;
 	int ey;
 	int length;
@@ -43,7 +51,7 @@ public:
 private:
 	int x;
 	int y;
-	double angle;
+	
 	IMAGE hookimage1, hookimage2;
 	IMAGE soleimage1, soleimage2;
 };
@@ -53,6 +61,7 @@ Hook::Hook()
 	x = width / 2;
 	y = 120;
 	angle = PI/2;
+	hook_direction = Hook_Direction::left;
 	length = width / 16;
 	ex = cos(angle) * length + x;
 	ey = sin(angle) * length + y;
@@ -64,6 +73,28 @@ Hook::Hook()
 Hook::~Hook()
 {
 }
+
+void Hook::H_Round(Hook hook)
+{
+	if (angle <= 5)
+	{
+		hook_direction = Hook_Direction::left;
+	}
+	else if (angle >= PI - 5)
+	{
+		hook_direction = Hook_Direction::right;
+	};
+	if (hook_direction==Hook_Direction::left)
+	{
+		hook.angle += PI / 32;
+	}
+	else if (hook_direction==Hook_Direction::right)
+	{
+		hook.angle -= PI / 32;
+	}
+}
+
+
 
 class Mine
 {
@@ -212,6 +243,7 @@ int main()
 			setfillcolor(BLACK);
 			fillcircle(width / 2, height / 2, height / 4);
 		};*/
+		hook.H_Round(hook);
 		if (GetAsyncKeyState(27) != 0)
 		{
 			break;
