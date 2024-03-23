@@ -35,12 +35,30 @@ public:
 	Hook();
 	~Hook();
 
-private:
+	
+	int ex;
+	int ey;
+	int length;
 
+private:
+	int x;
+	int y;
+	double angle;
+	IMAGE hookimage1, hookimage2;
+	IMAGE soleimage1, soleimage2;
 };
 
 Hook::Hook()
 {
+	x = width / 2;
+	y = 120;
+	angle = PI/2;
+	length = width / 16;
+	ex = cos(angle) * length + x;
+	ey = sin(angle) * length + y;
+	setlinecolor(BROWN);
+	setlinestyle(PS_COSMETIC, 5);
+	line(x, y, ex, ey);
 }
 
 Hook::~Hook()
@@ -53,7 +71,7 @@ public:
 	Mine();
 	~Mine();
 	void M_loadimage();
-	void M_LocationChange(Mine mine,Hook hook);
+	void M_LocationChange(Mine *mine,Hook *hook);
 	//Mine_Location *M_LocationInit();
 	//void create_xysize(int* count, Mine_Location* h);
 
@@ -71,7 +89,7 @@ private:
 	
 };
 
-void Mine::M_LocationChange(Mine mine,Hook hook)
+void Mine::M_LocationChange(Mine *mine,Hook *hook)
 {
 
 }
@@ -177,7 +195,9 @@ int main()
 	//cout <<"RAND_MAX is " << RAND_MAX << endl;
 	BeginBatchDraw();
 	Mine mine[Mine_Quantity];
+	Hook hook;
 	EndBatchDraw();
+	
 	
 
 	while (true)
