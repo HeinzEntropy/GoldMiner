@@ -50,6 +50,7 @@ public:
 	~Hook();
 	void H_Round(Hook *hook);
 	void H_Extending(Mine *mine, Hook *hook);
+	void drawline(Hook* hook);
 
 	Hook_Direction hook_direction;
 	double angle;
@@ -155,20 +156,31 @@ private:
 
 bool Mine::collisiondetection(Mine* mine, Hook* hook)
 {
-	if (hook->ex >= mine->x && hook->ex <= (mine->x + mine->size) && hook->ey >= mine->y && hook->ey <= (mine->y + mine->size))
+	if (mine->exist == true)
 	{
-		mine->x = hook->ex - mine->size / 2;
-		mine->y = hook->ey - mine->size / 2;
-		return true;
+		if (hook->ex >= mine->x && hook->ex <= (mine->x + mine->size) && hook->ey >= mine->y && hook->ey <= (mine->y + mine->size))
+		{
+			mine->x = hook->ex - mine->size / 2;
+			mine->y = hook->ey - mine->size / 2;
+			return true;
+		};
 	};
+	return false;
 	
 }
 
-void Mine::M_Putimage(Mine *mine)
+void Mine::M_Putimage(Mine* mine)
 {
-	putimage(mine->x, mine->y, &(mine->img1), SRCPAINT);
-	putimage(mine->x, mine->y, &(mine->img2), SRCAND);
-}
+	if (mine->y <= 120)
+	{
+		mine->exist = false;
+	};
+	if (mine->exist == true)
+	{
+		putimage(mine->x, mine->y, &(mine->img1), SRCPAINT);
+		putimage(mine->x, mine->y, &(mine->img2), SRCAND);
+	};
+};
 
 
 void Mine::M_loadimage()
@@ -272,9 +284,22 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 			hook->state = extending;
 			while (true)
 			{
+				BeginBatchDraw();
+				Sleep(10);
 				if (hook->state == extending)
 				{
 					hook->length += 5;
+					hook->drawline(hook);
+					setfillcolor(YELLOW);
+					setlinecolor(YELLOW);
+					fillrectangle(0, 0, width, 120);
+					putimage(0, 120, imgs + 4);
+					hook->H_Round(hook);
+					hook->drawline(hook);
+					for (int i = 0; i < Mine_Quantity; i++)
+					{
+						(mine + i)->M_Putimage(mine + i);
+					};
 				};
 				for (int i = 0; i < Mine_Quantity; i++)
 				{
@@ -284,6 +309,11 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 						cout << "hook->state = shortening;" << hook->state << " 1" << endl;
 						//break;
 					};
+					if ((mine + i)->y <= 120)
+					{
+						mine->exist == false;
+					};
+					(mine + i)->M_Putimage(mine + i);
 				};
 				if (hook->ex <= 0 || hook->ex >= width || hook->ey <= hook->y || hook->ey >= height)
 				{
@@ -293,6 +323,16 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 				};
 				if (hook->state == shortening)
 				{
+					setfillcolor(YELLOW);
+					setlinecolor(YELLOW);
+					fillrectangle(0, 0, width, 120);
+					putimage(0, 120, imgs + 4);
+					hook->H_Round(hook);
+					hook->drawline(hook);
+					for (int i = 0; i < Mine_Quantity; i++)
+					{
+						(mine + i)->M_Putimage(mine + i);
+					};
 					hook->length -= 5;
 					cout << "hook->length -= 5;" << endl;
 					if (hook->length <= width / 16)
@@ -302,15 +342,21 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 						break;
 					};
 				};
-				setlinecolor(BROWN);
-				setlinestyle(PS_COSMETIC, 5);
-				hook->ex = cos(hook->angle) * hook->length + hook->x;
-				hook->ey = sin(hook->angle) * hook->length + hook->y;
-				line(hook->x, hook->y, hook->ex, hook->ey);
+				EndBatchDraw();
 			};
 		};
 	};
+}
+
+void Hook::drawline(Hook* hook)
+{
+	setlinecolor(BROWN);
+	setlinestyle(PS_COSMETIC, 5);
+	hook->ex = cos(hook->angle) * hook->length + hook->x;
+	hook->ey = sin(hook->angle) * hook->length + hook->y;
+	line(hook->x, hook->y, hook->ex, hook->ey);
 };
+
 
 int main()
 {
@@ -372,16 +418,14 @@ int main()
 					{
 						break;
 					};
-					setlinecolor(BROWN);
-					setlinestyle(PS_COSMETIC, 5);
-					hook.ex = cos(hook.angle) * hook.length + hook.x;
-					hook.ey = sin(hook.angle) * hook.length + hook.y;
-					line(x, y, ex, ey);
+					
 				}
 			}
 		}*/
-		BeginBatchDraw();
 		hook.H_Extending(mine, &hook);
+		BeginBatchDraw();
+		hook.drawline(&hook);
+		
 		setfillcolor(YELLOW);
 		setlinecolor(YELLOW);
 		fillrectangle(0, 0, width, 120);
