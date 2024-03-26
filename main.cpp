@@ -17,6 +17,7 @@ IMAGE imgbk[11];
 IMAGE img[10];
 IMAGE imgl[3];
 
+//矿藏的坐标结构体
 typedef struct mine_location{
 	int x;
 	int y;
@@ -24,17 +25,20 @@ typedef struct mine_location{
 	struct mine_location * next;
 }Mine_Location;
 
+//加载背景
 void loadbackgraound()
 {
 	loadimage(imgs + 4, "./file/images/level-background-0.jpg", width, height/16*14);
 }
 
+//钩子方向
 enum Hook_Direction
 {
 	left,
 	right
 };
 
+//钩子状态
 enum Hook_State
 {
 	normal,
@@ -42,16 +46,20 @@ enum Hook_State
 	shortening
 };
 
+//矿钩类型
 class Hook
 {
+	//友元Mine类型
 	friend class Mine;
 public:
 	Hook();
 	~Hook();
+	//声明类方法
 	void H_Round(Hook *hook);
 	void H_Extending(Mine *mine, Hook *hook);
 	void drawline(Hook* hook);
 
+	//声明公开的对象内容
 	Hook_Direction hook_direction;
 	double angle;
 	int ex;
@@ -60,6 +68,7 @@ public:
 	Hook_State state;
 
 private:
+	//私有内容
 	int x;
 	int y;
 	
@@ -69,6 +78,7 @@ private:
 
 Hook::Hook()
 {
+	//构造函数
 	state = normal;
 	x = width / 2;
 	y = 120-20;
@@ -84,6 +94,7 @@ Hook::Hook()
 
 Hook::~Hook()
 {
+	//没有用到堆区，且矿钩对象会一直存在，无须单独的析构函数
 }
 
 void Hook::H_Round(Hook* hook)
@@ -123,10 +134,12 @@ void Hook::H_Round(Hook* hook)
 
 class Mine
 {
+	//友元矿钩
 	friend class Hook;
 public:
 	Mine();
 	~Mine();
+	//声明类方法
 	void M_loadimage();
 	void M_Putimage(Mine *mine);
 	bool collisiondetection(Mine *mine,Hook *hook);
@@ -154,9 +167,10 @@ private:
 
 }*/
 
+//碰撞检测函数
 bool Mine::collisiondetection(Mine* mine, Hook* hook)
 {
-	if (mine->exist == true)
+	if (mine->exist == true)//不存在就不会碰撞
 	{
 		if (hook->ex >= mine->x && hook->ex <= (mine->x + mine->size) && hook->ey >= mine->y && hook->ey <= (mine->y + mine->size))
 		{
@@ -169,13 +183,15 @@ bool Mine::collisiondetection(Mine* mine, Hook* hook)
 	
 }
 
+//重新放置照片
 void Mine::M_Putimage(Mine* mine)
 {
-	if (mine->y <= 120)
+	//检测是否应该存在并被放置
+	if (mine->y <= 160)
 	{
 		mine->exist = false;
 	};
-	if (mine->exist == true)
+	if (mine->exist == true)//不存在则不放置
 	{
 		putimage(mine->x, mine->y, &(mine->img1), SRCPAINT);
 		putimage(mine->x, mine->y, &(mine->img2), SRCAND);
@@ -185,20 +201,26 @@ void Mine::M_Putimage(Mine* mine)
 
 void Mine::M_loadimage()
 {
-	if(Mine::size<width/8)
+	//加载照片
+	cout <<"M_loadimage:" << "size is " << size << endl;
+	if (Mine::value <=1000)//较低价值加载金矿
 	{
 		loadimage(&img1, "./file/images/small_gold_mask.bmp", size, size);
 		loadimage(&img2, "./file/images/small_gold.bmp", size, size);
+		cout << "M_loadimage:" << "size is " << size << endl;
 	}
-	else
+	else//较高价值加载钻石
 	{
 		loadimage(&img1, "./file/images/diamond_mask.png", size/4, size/4);
 		loadimage(&img2, "./file/images/diamond.png", size/4, size/4);
+		size = size / 4;
+		cout << "M_loadimage:" << "size is " << size << endl;
 	}
 }
 
 Mine::Mine()
 {
+	//构造函数，使用了链表保证矿藏不隐藏
 	static Mine_Location* h = nullptr;
 	static Mine_Location* r = h;
 	Mine_Location* p = new Mine_Location;
@@ -217,6 +239,7 @@ Mine::Mine()
 	else
 	{
 		int count = 0;
+		//goto标记点
 	create_xysize:
 		Mine_Location* s = h;
 		p->x = width / 256 * (rand() % (256 + 1));
@@ -230,18 +253,8 @@ Mine::Mine()
 			if (((p->x + p->size) >= s->x && (p->x <= (s->x + s->size))) && (((p->y + p->size) >= s->y && p->y <= (s->y + s->size))))
 			{
 				cout << "Build failed, start regenerate" << endl;
-				goto create_xysize;
-			}
-			/*if ((((p->x + p->size) <= s->x) || (p->x >= (s->x + s->size))) && (((p->y + p->size) <= s->y) || (p->y >= (s->y + s->size))))
-			{
-				cout << "A new linked list element has been generated successfully!" << endl;
-			}
-			else
-			{
-				cout << "Build failed, start regenerate" << endl;
-				goto create_xysize;
-			};*/
-			
+				goto create_xysize;//重新进行赋值并比较
+			};
 			if (s != nullptr)s = s->next;
 		}
 		r->next = p;
@@ -250,15 +263,20 @@ Mine::Mine()
 		y = p->y;
 		size = p->size;
 	};
+	//控制台打印信息，不影响游玩（反正也关不掉控制台
 	cout << "X is " << x << "," << "Y is " << y << "," << "Its size is " << size << endl;
+	//矿的数量计量
 	static int Mine_count = 0;
 	Mine_count += 1;
 	cout << "Mine_count is " << Mine_count << endl;
 	/*x = width / 256 * (rand()%(256+1));
 	y = height / 256 * (rand()%(256-16*3+1)) + height / 16 * 3;
 	size = width / 128 * (rand() % (16 + 1)) + width / 32;*/
+	//矿的价值赋予
 	value = size * 10;
+	//矿的存在性赋予
 	exist = true;
+
 
 	
 	Mine::M_loadimage();
@@ -271,17 +289,19 @@ Mine::Mine()
 
 Mine::~Mine()
 {
+	//考虑在增加关卡时实现析构函数
 	cout << "Object has been deleted" << endl;
 }
 
+//矿钩伸长的函数
 void Hook::H_Extending(Mine* mine, Hook* hook)
 {
-	if (hook->state == normal)
+	if (hook->state == normal)//矿钩不正常不应当读取新的状态
 	{
-		if (GetAsyncKeyState(32) != 0)
+		if (GetAsyncKeyState(32) != 0)//按下空格开始伸长
 		{
 			cout << "Starting move" << endl;
-			hook->state = extending;
+			hook->state = extending;//改变状态
 			while (true)
 			{
 				BeginBatchDraw();
@@ -289,6 +309,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 				if (hook->state == extending)
 				{
 					hook->length += 5;
+					//绘制
 					hook->drawline(hook);
 					setfillcolor(YELLOW);
 					setlinecolor(YELLOW);
@@ -301,6 +322,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 						(mine + i)->M_Putimage(mine + i);
 					};
 				};
+				//碰撞到矿藏时矿钩缩短
 				for (int i = 0; i < Mine_Quantity; i++)
 				{
 					if ((mine + i)->collisiondetection(mine + i, hook) == true)
@@ -309,12 +331,13 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 						cout << "hook->state = shortening;" << hook->state << " 1" << endl;
 						//break;
 					};
-					if ((mine + i)->y <= 120)
+					/*if ((mine + i)->y <= 10)
 					{
 						mine->exist == false;
-					};
+					};*/
 					(mine + i)->M_Putimage(mine + i);
 				};
+				//碰撞到边界时矿钩缩短
 				if (hook->ex <= 0 || hook->ex >= width || hook->ey <= hook->y || hook->ey >= height)
 				{
 					hook->state = shortening;
@@ -366,62 +389,15 @@ int main()
 	putimage(0, 120, imgs + 4);
 
 	//cout <<"RAND_MAX is " << RAND_MAX << endl;
-	
+	//生成类对象
 	BeginBatchDraw();
 	Mine mine[Mine_Quantity];
 	Hook hook;
 	EndBatchDraw();
-	
-	/*setlinecolor(BROWN);
-	setlinestyle(PS_COSMETIC, 5);
-	int a = 5;
-	int ex = cos(a) * 5 + width / 2;
-	int ey = sin(a) * 5 + 120;
-	line(width / 2, 120, ex, ey);
-	a = 10;
-	ex = cos(5) * 5 + width/2;
-	ey = sin(5) * 5 + 120;*/
-	
-
 
 	while (true)
 	{
 		Sleep(10);
-		/*if (GetAsyncKeyState(32) != 0)
-		{
-			setlinecolor(RED);
-			setfillcolor(WHITE);
-			fillcircle(width / 2, height / 2, height / 4);
-			Sleep(500);
-			setlinecolor(BLACK);
-			setfillcolor(BLACK);
-			fillcircle(width / 2, height / 2, height / 4);
-		};*/
-		/*if (hook.state == normal)
-		{
-			if (GetAsyncKeyState(32) != 0)
-			{
-				cout << "Starting move" << endl;
-				hook.state = extending;
-				while (true)
-				{
-					hook.length += 5;
-					for (int i = 0; i < Mine_Quantity; i++)
-					{
-						if ((mine + i)->collisiondetection(mine + i, &hook) == true)
-						{
-							hook.state = normal;
-							break;
-						};
-					};
-					if (hook.ex <= 0 || hook.ex >= width || hook.ey <= 0 || hook.ey >= height)
-					{
-						break;
-					};
-					
-				}
-			}
-		}*/
 		hook.H_Extending(mine, &hook);
 		BeginBatchDraw();
 		hook.drawline(&hook);
