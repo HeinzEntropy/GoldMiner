@@ -35,18 +35,28 @@ enum Hook_Direction
 	right
 };
 
+enum Hook_State
+{
+	normal,
+	extending,
+	shortening
+};
+
 class Hook
 {
+	friend class Mine;
 public:
 	Hook();
 	~Hook();
-	void H_Round(Hook hook);
+	void H_Round(Hook *hook);
+	void H_Extending(Mine *mine, Hook *hook);
 
 	Hook_Direction hook_direction;
 	double angle;
 	int ex;
 	int ey;
 	int length;
+	Hook_State state;
 
 private:
 	int x;
@@ -58,8 +68,9 @@ private:
 
 Hook::Hook()
 {
+	state = normal;
 	x = width / 2;
-	y = 120;
+	y = 120-20;
 	angle = PI/2;
 	hook_direction = Hook_Direction::left;
 	length = width / 16;
@@ -74,35 +85,52 @@ Hook::~Hook()
 {
 }
 
-void Hook::H_Round(Hook hook)
+void Hook::H_Round(Hook* hook)
 {
-	if (angle <= 5)
-	{
-		hook_direction = Hook_Direction::left;
-	}
-	else if (angle >= PI - 5)
-	{
-		hook_direction = Hook_Direction::right;
+	//cout<<"angle is" << angle << endl;
+	//cout << "Direction is " << hook_direction << endl;
+	if (hook->state == normal) {
+		if (angle <= 10.0 / 180 * PI)
+		{
+			hook->hook_direction = Hook_Direction::left;
+			//cout << "l" << endl;
+		}
+		else if (angle >= PI - 10.0 / 180 * PI)
+		{
+			hook->hook_direction = Hook_Direction::right;
+			//cout << "r" << endl;
+		};
+		if (hook_direction == Hook_Direction::left)
+		{
+			hook->angle += PI / 128;
+			//cout << "+" << PI / 128 << endl;
+		}
+		else if (hook_direction == Hook_Direction::right)
+		{
+			hook->angle -= PI / 128;
+			//cout << "-" << PI / 128 << endl;
+		}
+		setlinecolor(BROWN);
+		setlinestyle(PS_COSMETIC, 5);
+		hook->ex = cos(angle) * length + x;
+		hook->ey = sin(angle) * length + y;
+		line(x, y, ex, ey);
 	};
-	if (hook_direction==Hook_Direction::left)
-	{
-		hook.angle += PI / 32;
-	}
-	else if (hook_direction==Hook_Direction::right)
-	{
-		hook.angle -= PI / 32;
-	}
-}
+};
 
 
 
 class Mine
 {
+	friend class Hook;
 public:
 	Mine();
 	~Mine();
 	void M_loadimage();
-	void M_LocationChange(Mine *mine,Hook *hook);
+	void M_Putimage(Mine *mine);
+	bool collisiondetection(Mine *mine,Hook *hook);
+	//friend void H_Extending(Mine* mine, Hook* hook);
+	//void M_LocationChange(Mine *mine,Hook *hook);
 	//Mine_Location *M_LocationInit();
 	//void create_xysize(int* count, Mine_Location* h);
 
@@ -120,10 +148,28 @@ private:
 	
 };
 
-void Mine::M_LocationChange(Mine *mine,Hook *hook)
+/*void Mine::M_LocationChange(Mine* mine, Hook* hook)
 {
 
+}*/
+
+bool Mine::collisiondetection(Mine* mine, Hook* hook)
+{
+	if (hook->ex >= mine->x && hook->ex <= (mine->x + mine->size) && hook->ey >= mine->y && hook->ey <= (mine->y + mine->size))
+	{
+		mine->x = hook->ex - mine->size / 2;
+		mine->y = hook->ey - mine->size / 2;
+		return true;
+	};
+	
 }
+
+void Mine::M_Putimage(Mine *mine)
+{
+	putimage(mine->x, mine->y, &(mine->img1), SRCPAINT);
+	putimage(mine->x, mine->y, &(mine->img2), SRCAND);
+}
+
 
 void Mine::M_loadimage()
 {
@@ -216,6 +262,56 @@ Mine::~Mine()
 	cout << "Object has been deleted" << endl;
 }
 
+void Hook::H_Extending(Mine* mine, Hook* hook)
+{
+	if (hook->state == normal)
+	{
+		if (GetAsyncKeyState(32) != 0)
+		{
+			cout << "Starting move" << endl;
+			hook->state = extending;
+			while (true)
+			{
+				if (hook->state == extending)
+				{
+					hook->length += 5;
+				};
+				for (int i = 0; i < Mine_Quantity; i++)
+				{
+					if ((mine + i)->collisiondetection(mine + i, hook) == true)
+					{
+						hook->state = shortening;
+						cout << "hook->state = shortening;" << hook->state << " 1" << endl;
+						//break;
+					};
+				};
+				if (hook->ex <= 0 || hook->ex >= width || hook->ey <= hook->y || hook->ey >= height)
+				{
+					hook->state = shortening;
+					cout << "hook->state = shortening;" << hook->state << " 2" << endl;
+					//break;
+				};
+				if (hook->state == shortening)
+				{
+					hook->length -= 5;
+					cout << "hook->length -= 5;" << endl;
+					if (hook->length <= width / 16)
+					{
+						hook->length = width / 16;
+						hook->state = normal;
+						break;
+					};
+				};
+				setlinecolor(BROWN);
+				setlinestyle(PS_COSMETIC, 5);
+				hook->ex = cos(hook->angle) * hook->length + hook->x;
+				hook->ey = sin(hook->angle) * hook->length + hook->y;
+				line(hook->x, hook->y, hook->ex, hook->ey);
+			};
+		};
+	};
+};
+
 int main()
 {
 	srand((unsigned)time(NULL));//生成随机数种子
@@ -224,15 +320,27 @@ int main()
 	putimage(0, 120, imgs + 4);
 
 	//cout <<"RAND_MAX is " << RAND_MAX << endl;
+	
 	BeginBatchDraw();
 	Mine mine[Mine_Quantity];
 	Hook hook;
 	EndBatchDraw();
 	
+	/*setlinecolor(BROWN);
+	setlinestyle(PS_COSMETIC, 5);
+	int a = 5;
+	int ex = cos(a) * 5 + width / 2;
+	int ey = sin(a) * 5 + 120;
+	line(width / 2, 120, ex, ey);
+	a = 10;
+	ex = cos(5) * 5 + width/2;
+	ey = sin(5) * 5 + 120;*/
 	
+
 
 	while (true)
 	{
+		Sleep(10);
 		/*if (GetAsyncKeyState(32) != 0)
 		{
 			setlinecolor(RED);
@@ -243,7 +351,48 @@ int main()
 			setfillcolor(BLACK);
 			fillcircle(width / 2, height / 2, height / 4);
 		};*/
-		hook.H_Round(hook);
+		/*if (hook.state == normal)
+		{
+			if (GetAsyncKeyState(32) != 0)
+			{
+				cout << "Starting move" << endl;
+				hook.state = extending;
+				while (true)
+				{
+					hook.length += 5;
+					for (int i = 0; i < Mine_Quantity; i++)
+					{
+						if ((mine + i)->collisiondetection(mine + i, &hook) == true)
+						{
+							hook.state = normal;
+							break;
+						};
+					};
+					if (hook.ex <= 0 || hook.ex >= width || hook.ey <= 0 || hook.ey >= height)
+					{
+						break;
+					};
+					setlinecolor(BROWN);
+					setlinestyle(PS_COSMETIC, 5);
+					hook.ex = cos(hook.angle) * hook.length + hook.x;
+					hook.ey = sin(hook.angle) * hook.length + hook.y;
+					line(x, y, ex, ey);
+				}
+			}
+		}*/
+		BeginBatchDraw();
+		hook.H_Extending(mine, &hook);
+		setfillcolor(YELLOW);
+		setlinecolor(YELLOW);
+		fillrectangle(0, 0, width, 120);
+		putimage(0, 120, imgs + 4);
+		hook.H_Round(&hook);
+		for (int i = 0; i < Mine_Quantity; i++)
+		{
+			(mine + i)->M_Putimage(mine + i);
+		};
+		EndBatchDraw();
+		
 		if (GetAsyncKeyState(27) != 0)
 		{
 			break;
