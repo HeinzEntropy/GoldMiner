@@ -31,42 +31,6 @@ void loadbackgraound()
 	loadimage(imgs + 4, "./file/images/level-background-0.jpg", width, height/16*14);
 }
 
-class Mine
-{
-	//友元矿钩
-	friend class Hook;
-public:
-	Mine();
-	~Mine();
-	//声明类方法
-	void M_loadimage();
-	void M_Putimage(Mine* mine);
-	bool collisiondetection(Mine* mine, Hook* hook);
-	static int Value_Sum;
-	static void putValueSum();
-	//friend void H_Extending(Mine* mine, Hook* hook);
-	//void M_LocationChange(Mine *mine,Hook *hook);
-	//Mine_Location *M_LocationInit();
-	//void create_xysize(int* count, Mine_Location* h);
-
-private:
-	//创建精灵图和掩码图
-	IMAGE img1, img2;
-	//坐标及其大小
-	int x;
-	int y;
-	int size;
-	//矿的价值
-	int value;
-	//矿的存在性
-	bool exist;
-
-
-};
-//Mine类的静态变量集中初始化区
-int Mine::Value_Sum = 0;
-
-
 //钩子方向
 enum Hook_Direction
 {
@@ -165,6 +129,43 @@ void Hook::H_Round(Hook* hook)
 		line(x, y, ex, ey);
 	};
 };
+
+
+
+class Mine
+{
+	//友元矿钩
+	friend class Hook;
+public:
+	Mine();
+	~Mine();
+	//声明类方法
+	void M_loadimage();
+	void M_Putimage(Mine *mine);
+	bool collisiondetection(Mine *mine,Hook *hook);
+	static int Value_Sum;
+	static void putValueSum();
+	//friend void H_Extending(Mine* mine, Hook* hook);
+	//void M_LocationChange(Mine *mine,Hook *hook);
+	//Mine_Location *M_LocationInit();
+	//void create_xysize(int* count, Mine_Location* h);
+
+private:
+	//创建精灵图和掩码图
+	IMAGE img1,img2;
+	//坐标及其大小
+	int x;
+	int y;
+	int size;
+	//矿的价值
+	int value;
+	//矿的存在性
+	bool exist;
+	
+	
+};
+//Mine类的静态变量集中初始化区
+int Mine::Value_Sum = 0;
 
 //碰撞检测函数
 bool Mine::collisiondetection(Mine* mine, Hook* hook)
