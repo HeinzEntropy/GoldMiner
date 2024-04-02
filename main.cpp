@@ -144,7 +144,7 @@ public:
 	void M_Putimage(Mine *mine);
 	bool collisiondetection(Mine *mine,Hook *hook);
 	static int Value_Sum;
-	//void putValueSum();
+	static void putValueSum();
 	//friend void H_Extending(Mine* mine, Hook* hook);
 	//void M_LocationChange(Mine *mine,Hook *hook);
 	//Mine_Location *M_LocationInit();
@@ -183,14 +183,17 @@ bool Mine::collisiondetection(Mine* mine, Hook* hook)
 	
 }
 
-/*void Mine::putValueSum()
+void Mine::putValueSum()
 {
 	setbkmode(TRANSPARENT);
 	settextcolor(BLUE);
 	settextstyle(width / 8, height / 16, _T("宋体"));
-	static TCHAR ValeSum[50];
+	static TCHAR ValueSum[50];
+	//sprintf()
+	sprintf_s(ValueSum, _T("得分：%d"), Mine::Value_Sum);
+	outtextxy(0, 0, ValueSum);
 
-}*/
+}
 
 
 
@@ -198,15 +201,23 @@ bool Mine::collisiondetection(Mine* mine, Hook* hook)
 void Mine::M_Putimage(Mine* mine)
 {
 	//检测是否应该存在并被放置
-	if (mine->y <= 160)
+	/*if (mine->y <= 160)
 	{
 		mine->exist = false;
 		Mine::Value_Sum = Mine::Value_Sum + mine->value;
-	};
+	};*/
 	if (mine->exist == true)//不存在则不放置
 	{
-		putimage(mine->x, mine->y, &(mine->img1), SRCPAINT);
-		putimage(mine->x, mine->y, &(mine->img2), SRCAND);
+		if (mine->y <= 160)
+		{
+			mine->exist = false;
+			Mine::Value_Sum = Mine::Value_Sum + mine->value;
+		}
+		else 
+		{
+			putimage(mine->x, mine->y, &(mine->img1), SRCPAINT);
+			putimage(mine->x, mine->y, &(mine->img2), SRCAND);
+		};
 	};
 };
 
@@ -418,6 +429,7 @@ int main()
 		setfillcolor(YELLOW);
 		setlinecolor(YELLOW);
 		fillrectangle(0, 0, width, 120);
+		Mine::putValueSum();
 		putimage(0, 120, imgs + 4);
 		hook.H_Round(&hook);
 		for (int i = 0; i < Mine_Quantity; i++)
