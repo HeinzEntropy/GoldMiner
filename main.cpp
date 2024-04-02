@@ -143,6 +143,8 @@ public:
 	void M_loadimage();
 	void M_Putimage(Mine *mine);
 	bool collisiondetection(Mine *mine,Hook *hook);
+	static int Value_Sum;
+	//void putValueSum();
 	//friend void H_Extending(Mine* mine, Hook* hook);
 	//void M_LocationChange(Mine *mine,Hook *hook);
 	//Mine_Location *M_LocationInit();
@@ -160,12 +162,10 @@ private:
 	//矿的存在性
 	bool exist;
 	
+	
 };
-
-/*void Mine::M_LocationChange(Mine* mine, Hook* hook)
-{
-
-}*/
+//Mine类的静态变量集中初始化区
+int Mine::Value_Sum = 0;
 
 //碰撞检测函数
 bool Mine::collisiondetection(Mine* mine, Hook* hook)
@@ -183,6 +183,17 @@ bool Mine::collisiondetection(Mine* mine, Hook* hook)
 	
 }
 
+/*void Mine::putValueSum()
+{
+	setbkmode(TRANSPARENT);
+	settextcolor(BLUE);
+	settextstyle(width / 8, height / 16, _T("宋体"));
+	static TCHAR ValeSum[50];
+
+}*/
+
+
+
 //重新放置照片
 void Mine::M_Putimage(Mine* mine)
 {
@@ -190,6 +201,7 @@ void Mine::M_Putimage(Mine* mine)
 	if (mine->y <= 160)
 	{
 		mine->exist = false;
+		Mine::Value_Sum = Mine::Value_Sum + mine->value;
 	};
 	if (mine->exist == true)//不存在则不放置
 	{
@@ -383,6 +395,7 @@ void Hook::drawline(Hook* hook)
 
 int main()
 {
+	//Mine::Value_Sum = 0;
 	srand((unsigned)time(NULL));//生成随机数种子
 	initgraph(width, height);
 	loadbackgraound();
