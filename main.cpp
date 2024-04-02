@@ -10,7 +10,7 @@ using namespace std;
 #define height 720
 #define IMGS_QUANTITY 5
 #define PI 3.1415926535
-constexpr auto Mine_Quantity = (const int)10;
+constexpr auto Mine_Quantity = (const int)18;
 
 IMAGE imgs[IMGS_QUANTITY];
 IMAGE imgbk[11];
@@ -58,6 +58,7 @@ public:
 	void H_Round(Hook *hook);
 	void H_Extending(Mine *mine, Hook *hook);
 	void drawline(Hook* hook);
+	void putsole();
 
 	//声明公开的对象内容
 	Hook_Direction hook_direction;
@@ -90,6 +91,9 @@ Hook::Hook()
 	setlinecolor(BROWN);
 	setlinestyle(PS_COSMETIC, 5);
 	line(x, y, ex, ey);
+	loadimage(&soleimage1, "./file/images/char1.jpg", width/8, height/8);
+	loadimage(&soleimage2, "./file/images/char1_mask.jpg", width/8, height/8);
+
 }
 
 Hook::~Hook()
@@ -208,7 +212,7 @@ void Mine::M_Putimage(Mine* mine)
 	};*/
 	if (mine->exist == true)//不存在则不放置
 	{
-		if (mine->y <= 160)
+		if (mine->y <= 160 && (mine->x>=width/16*6&&mine->x<=width/16*10))
 		{
 			mine->exist = false;
 			Mine::Value_Sum = Mine::Value_Sum + mine->value;
@@ -250,7 +254,7 @@ Mine::Mine()
 	if (h == nullptr)
 	{
 		p->x = width / 256 * (rand() % (256 + 1));
-		p->y = height / 256 * (rand() % (256 - 16 * 3 + 1)) + height / 16 * 3;
+		p->y = height / 256 * (rand() % (256 - 16 * 3 + 1)) + height / 16 * 4;
 		p->size = width / 128 * (rand() % (16 + 1)) + width / 32;
 		p->next = nullptr;
 		h = p;
@@ -266,7 +270,7 @@ Mine::Mine()
 	create_xysize:
 		Mine_Location* s = h;
 		p->x = width / 256 * (rand() % (256 + 1));
-		p->y = height / 256 * (rand() % (256 - 16 * 3 + 1)) + height / 16 * 3;
+		p->y = height / 256 * (rand() % (256 - 16 * 3 + 1)) + height / 16 * 4;
 		p->size = width / 128 * (rand() % (16 + 1)) + width / 32;
 		p->next = nullptr;
 		while (s->next != nullptr)
@@ -299,9 +303,6 @@ Mine::Mine()
 	value = size * 10;
 	//矿的存在性赋予
 	exist = true;
-
-
-	
 	Mine::M_loadimage();
 	//BeginBatchDraw();
 	putimage(x, y, &img1, SRCPAINT);
@@ -328,7 +329,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 			while (true)
 			{
 				BeginBatchDraw();
-				Sleep(10);
+				Sleep(1);
 				if (hook->state == extending)
 				{
 					hook->length += 5;
@@ -396,12 +397,20 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 
 void Hook::drawline(Hook* hook)
 {
+	putimage(width / 2, 60, &hook->soleimage2, SRCPAINT);
+	putimage(width / 2, 60, &hook->soleimage1, SRCAND);
 	setlinecolor(BROWN);
 	setlinestyle(PS_COSMETIC, 5);
 	hook->ex = cos(hook->angle) * hook->length + hook->x;
 	hook->ey = sin(hook->angle) * hook->length + hook->y;
 	line(hook->x, hook->y, hook->ex, hook->ey);
-};
+}
+void Hook::putsole()
+{
+	putimage(width / 2, 60, &soleimage2, SRCPAINT);
+	putimage(width / 2, 60, &soleimage1, SRCAND);
+}
+;
 
 
 int main()
@@ -432,6 +441,7 @@ int main()
 		Mine::putValueSum();
 		putimage(0, 120, imgs + 4);
 		hook.H_Round(&hook);
+		hook.putsole();
 		for (int i = 0; i < Mine_Quantity; i++)
 		{
 			(mine + i)->M_Putimage(mine + i);
