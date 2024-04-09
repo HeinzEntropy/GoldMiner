@@ -28,9 +28,16 @@ typedef struct mine_location{
 }Mine_Location;
 
 //加载背景
-void loadbackgraound()
+void putbackgraound()
 {
-	loadimage(imgs + 4, "./file/images/level-background-0.jpg", width, height/16*14);
+	static bool flag = true;
+	static IMAGE backgroundimage;
+	if (flag == true)
+	{
+		loadimage(&backgroundimage, "./file/images/level-background-0.jpg", width, height / 16 * 14);
+		flag = false;
+	};
+	putimage(0, 120, &backgroundimage);
 }
 
 //钩子方向
@@ -48,93 +55,7 @@ enum Hook_State
 	shortening
 };
 
-//矿钩类型
-class Hook
-{
-	//友元Mine类型
-public: friend class Mine;
-public:
-	Hook();
-	~Hook();
-	//声明类方法
-	void H_Round(Hook *hook);
-	void H_Extending(Mine *mine, Hook *hook);
-	void drawline(Hook* hook);
-	void putsole();
 
-	//声明公开的对象内容
-	Hook_Direction hook_direction;
-	double angle;
-	int ex;
-	int ey;
-	int length;
-	Hook_State state;
-
-private:
-	//私有内容
-	int x;
-	int y;
-	
-	IMAGE hookimage1, hookimage2;
-	IMAGE soleimage1, soleimage2;
-};
-
-Hook::Hook()
-{
-	//构造函数
-	state = normal;
-	x = width / 2;
-	y = 120-20;
-	angle = PI/2;
-	hook_direction = Hook_Direction::left;
-	length = width / 16;
-	ex = cos(angle) * length + x;
-	ey = sin(angle) * length + y;
-	setlinecolor(BROWN);
-	setlinestyle(PS_COSMETIC, 5);
-	line(x, y, ex, ey);
-	loadimage(&soleimage1, "./file/images/char1.jpg", width/8, height/8);
-	loadimage(&soleimage2, "./file/images/char1_mask.jpg", width/8, height/8);
-
-}
-
-Hook::~Hook()
-{
-	//没有用到堆区，且矿钩对象会一直存在，无须单独的析构函数
-}
-
-void Hook::H_Round(Hook* hook)
-{
-	//cout<<"angle is" << angle << endl;
-	//cout << "Direction is " << hook_direction << endl;
-	if (hook->state == normal) {
-		if (angle <= 10.0 / 180 * PI)
-		{
-			hook->hook_direction = Hook_Direction::left;
-			//cout << "l" << endl;
-		}
-		else if (angle >= PI - 10.0 / 180 * PI)
-		{
-			hook->hook_direction = Hook_Direction::right;
-			//cout << "r" << endl;
-		};
-		if (hook_direction == Hook_Direction::left)
-		{
-			hook->angle += PI / 128;
-			//cout << "+" << PI / 128 << endl;
-		}
-		else if (hook_direction == Hook_Direction::right)
-		{
-			hook->angle -= PI / 128;
-			//cout << "-" << PI / 128 << endl;
-		}
-		setlinecolor(BROWN);
-		setlinestyle(PS_COSMETIC, 5);
-		hook->ex = cos(angle) * length + x;
-		hook->ey = sin(angle) * length + y;
-		line(x, y, ex, ey);
-	};
-};
 
 
 
@@ -148,9 +69,9 @@ public:
 	//声明类方法
 	void M_loadimage();
 	void M_Putimage(Mine *mine);
-	bool collisiondetection(Mine *mine,Hook *hook);
 	static int Value_Sum;
 	static void putValueSum();
+	void M_Putimages(Mine* mine, int M_quantity);
 	//friend void H_Extending(Mine* mine, Hook* hook);
 	//void M_LocationChange(Mine *mine,Hook *hook);
 	//Mine_Location *M_LocationInit();
@@ -173,21 +94,7 @@ private:
 //Mine类的静态变量集中初始化区
 int Mine::Value_Sum = 0;
 
-//碰撞检测函数
-bool Mine::collisiondetection(Mine* mine, Hook* hook)
-{
-	if (mine->exist == true)//不存在就不会碰撞
-	{
-		if (hook->ex >= mine->x && hook->ex <= (mine->x + mine->size) && hook->ey >= mine->y && hook->ey <= (mine->y + mine->size))
-		{
-			mine->x = hook->ex - mine->size / 2;
-			mine->y = hook->ey - mine->size / 2;
-			return true;
-		};
-	};
-	return false;
-	
-}
+
 
 void Mine::putValueSum()
 {
@@ -199,6 +106,14 @@ void Mine::putValueSum()
 	sprintf_s(ValueSum, _T("得分：%d"), Mine::Value_Sum);
 	outtextxy(0, 0, ValueSum);
 
+}
+
+void Mine::M_Putimages(Mine* mine, int M_quantity)
+{
+	for (int i = 0; i < M_quantity; i++)
+	{
+		(mine + i)->M_Putimage(mine + i);
+	};
 }
 
 
@@ -298,9 +213,6 @@ Mine::Mine()
 	static int Mine_count = 0;
 	Mine_count += 1;
 	cout << "Mine_count is " << Mine_count << endl;
-	/*x = width / 256 * (rand()%(256+1));
-	y = height / 256 * (rand()%(256-16*3+1)) + height / 16 * 3;
-	size = width / 128 * (rand() % (16 + 1)) + width / 32;*/
 	//矿的价值赋予
 	value = size * 10;
 	//矿的存在性赋予
@@ -318,6 +230,112 @@ Mine::~Mine()
 	//考虑在增加关卡时实现析构函数
 	cout << "Object has been deleted" << endl;
 }
+
+//矿钩类型
+class Hook
+{
+	//友元Mine类型
+public: friend class Mine;
+public:
+	Hook();
+	~Hook();
+	//声明类方法
+	void H_Round(Hook* hook);
+	void H_Extending(Mine* mine, Hook* hook);
+	void drawline(Hook* hook);
+	void putsole();
+	bool collisiondetection(Mine* mine, Hook* hook);
+
+	//声明公开的对象内容
+	Hook_Direction hook_direction;
+	double angle;
+	int ex;
+	int ey;
+	int length;
+	Hook_State state;
+
+private:
+	//私有内容
+	int x;
+	int y;
+
+	IMAGE hookimage1, hookimage2;
+	IMAGE soleimage1, soleimage2;
+};
+
+Hook::Hook()
+{
+	//构造函数
+	state = normal;
+	x = width / 2;
+	y = 120 - 20;
+	angle = PI / 2;
+	hook_direction = Hook_Direction::left;
+	length = width / 16;
+	ex = cos(angle) * length + x;
+	ey = sin(angle) * length + y;
+	setlinecolor(BROWN);
+	setlinestyle(PS_COSMETIC, 5);
+	line(x, y, ex, ey);
+	loadimage(&soleimage1, "./file/images/char1.jpg", width / 8, height / 8);
+	loadimage(&soleimage2, "./file/images/char1_mask.jpg", width / 8, height / 8);
+
+}
+
+Hook::~Hook()
+{
+	//没有用到堆区，且矿钩对象会一直存在，无须单独的析构函数
+}
+
+//碰撞检测函数
+bool Hook::collisiondetection(Mine* mine, Hook* hook)
+{
+	if (mine->exist == true)//不存在就不会碰撞
+	{
+		if (hook->ex >= mine->x && hook->ex <= (mine->x + mine->size) && hook->ey >= mine->y && hook->ey <= (mine->y + mine->size))
+		{
+			mine->x = hook->ex - mine->size / 2;
+			mine->y = hook->ey - mine->size / 2;
+			return true;
+		};
+	};
+	return false;
+
+}
+
+void Hook::H_Round(Hook* hook)
+{
+	//cout<<"angle is" << angle << endl;
+	//cout << "Direction is " << hook_direction << endl;
+	if (hook->state == normal) {
+		if (angle <= 10.0 / 180 * PI)
+		{
+			hook->hook_direction = Hook_Direction::left;
+			//cout << "l" << endl;
+		}
+		else if (angle >= PI - 10.0 / 180 * PI)
+		{
+			hook->hook_direction = Hook_Direction::right;
+			//cout << "r" << endl;
+		};
+		if (hook_direction == Hook_Direction::left)
+		{
+			hook->angle += PI / 128;
+			//cout << "+" << PI / 128 << endl;
+		}
+		else if (hook_direction == Hook_Direction::right)
+		{
+			hook->angle -= PI / 128;
+			//cout << "-" << PI / 128 << endl;
+		}
+		setlinecolor(BROWN);
+		setlinestyle(PS_COSMETIC, 5);
+		hook->ex = cos(angle) * length + x;
+		hook->ey = sin(angle) * length + y;
+		line(x, y, ex, ey);
+	};
+};
+
 
 //矿钩伸长的函数
 void Hook::H_Extending(Mine* mine, Hook* hook)
@@ -351,16 +369,12 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 				//碰撞到矿藏时矿钩缩短
 				for (int i = 0; i < Mine_Quantity; i++)
 				{
-					if ((mine + i)->collisiondetection(mine + i, hook) == true)
+					if (hook->collisiondetection(mine + i, hook) == true)
 					{
 						hook->state = shortening;
 						cout << "hook->state = shortening;" << hook->state << " 1" << endl;
 						//break;
 					};
-					/*if ((mine + i)->y <= 10)
-					{
-						mine->exist == false;
-					};*/
 					(mine + i)->M_Putimage(mine + i);
 				};
 				//碰撞到边界时矿钩缩短
@@ -375,13 +389,11 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					setfillcolor(YELLOW);
 					setlinecolor(YELLOW);
 					fillrectangle(0, 0, width, 120);
-					putimage(0, 120, imgs + 4);
+					//putimage(0, 120, imgs + 4);
+					putbackgraound();
 					hook->H_Round(hook);
 					hook->drawline(hook);
-					for (int i = 0; i < Mine_Quantity; i++)
-					{
-						(mine + i)->M_Putimage(mine + i);
-					};
+					mine->M_Putimages(mine, Mine_Quantity);
 					hook->length -= 5;
 					cout << "hook->length -= 5;" << endl;
 					if (hook->length <= width / 16)
@@ -390,6 +402,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 						hook->state = normal;
 						break;
 					};
+					//putinterface(mine, hook);
 				};
 				EndBatchDraw();
 			};
@@ -399,8 +412,6 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 
 void Hook::drawline(Hook* hook)
 {
-	/*putimage(width / 2, 60, &hook->soleimage2, SRCPAINT);
-	putimage(width / 2, 60, &hook->soleimage1, SRCAND);*/
 	Hook::putsole();
 	setlinecolor(BROWN);
 	setlinestyle(PS_COSMETIC, 5);
@@ -423,13 +434,32 @@ void put_exitReminder()
 	static TCHAR reminder1[50];
 	static TCHAR reminder2[50];
 
-	//sprintf()
 	sprintf_s(reminder1, _T("按ESC键退出游戏"));
 	sprintf_s(reminder2, _T("按P键下一关游戏"));
 	outtextxy(width / 16 * 11, 0, reminder1);
 	outtextxy(width / 16 * 11, height / 16, reminder2);
 }
 
+void putinterface(Mine *mine,Hook *hook)
+{
+	BeginBatchDraw();
+	setfillcolor(YELLOW);
+	setlinecolor(YELLOW);
+	fillrectangle(0, 0, width, 120);
+	Mine::putValueSum();
+	putbackgraound();
+	hook->putsole();
+	hook->drawline(hook);
+	put_exitReminder();
+	hook->H_Round(hook);
+
+	/*for (int i = 0; i < Mine_Quantity; i++)
+	{
+		(mine + i)->M_Putimage(mine + i);
+	};*/
+	mine->M_Putimages(mine, Mine_Quantity);
+	EndBatchDraw();
+}
 
 
 int GoldMiner()
@@ -437,7 +467,7 @@ int GoldMiner()
 	//Mine::Value_Sum = 0;
 	srand((unsigned)time(NULL));//生成随机数种子
 	initgraph(width, height);
-	loadbackgraound();
+	//loadbackgraound();原代码已被更改现已失效
 	putimage(0, 120, imgs + 4);
 
 	//cout <<"RAND_MAX is " << RAND_MAX << endl;
@@ -451,14 +481,15 @@ int GoldMiner()
 	{
 		Sleep(10);
 		hook.H_Extending(mine, &hook);
-		BeginBatchDraw();
+		/*BeginBatchDraw();
 		setfillcolor(YELLOW);
 		setlinecolor(YELLOW);
 		fillrectangle(0, 0, width, 120);
-		putimage(0, 120, imgs + 4);
+		//putimage(0, 120, imgs + 4);
+		Mine::putValueSum();
+		putbackgraound();
 		hook.putsole();
 		hook.drawline(&hook);
-		Mine::putValueSum();
 		put_exitReminder();
 		hook.H_Round(&hook);
 		
@@ -466,7 +497,8 @@ int GoldMiner()
 		{
 			(mine + i)->M_Putimage(mine + i);
 		};
-		EndBatchDraw();
+		EndBatchDraw();*/
+		putinterface(mine, &hook);
 		
 		if (GetAsyncKeyState(27) != 0)
 		{
