@@ -399,8 +399,9 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 
 void Hook::drawline(Hook* hook)
 {
-	putimage(width / 2, 60, &hook->soleimage2, SRCPAINT);
-	putimage(width / 2, 60, &hook->soleimage1, SRCAND);
+	/*putimage(width / 2, 60, &hook->soleimage2, SRCPAINT);
+	putimage(width / 2, 60, &hook->soleimage1, SRCAND);*/
+	Hook::putsole();
 	setlinecolor(BROWN);
 	setlinestyle(PS_COSMETIC, 5);
 	hook->ex = cos(hook->angle) * hook->length + hook->x;
@@ -409,16 +410,29 @@ void Hook::drawline(Hook* hook)
 }
 void Hook::putsole()
 {
-	putimage(width / 2, 60, &soleimage2, SRCPAINT);
-	putimage(width / 2, 60, &soleimage1, SRCAND);
+	putimage(width / 2-20, 60-5, &soleimage2, SRCPAINT);
+	putimage(width / 2-20, 60-5, &soleimage1, SRCAND);
 }
 ;
 
+void put_exitReminder()
+{
+	setbkmode(TRANSPARENT);
+	settextcolor(BLUE);
+	settextstyle(width / 24, height / 32, _T("宋体"));
+	static TCHAR reminder1[50];
+	static TCHAR reminder2[50];
+
+	//sprintf()
+	sprintf_s(reminder1, _T("按ESC键退出游戏"));
+	sprintf_s(reminder2, _T("按P键下一关游戏"));
+	outtextxy(width / 16 * 11, 0, reminder1);
+	outtextxy(width / 16 * 11, height / 16, reminder2);
+}
 
 
 
-
-int main()
+int GoldMiner()
 {
 	//Mine::Value_Sum = 0;
 	srand((unsigned)time(NULL));//生成随机数种子
@@ -438,15 +452,16 @@ int main()
 		Sleep(10);
 		hook.H_Extending(mine, &hook);
 		BeginBatchDraw();
-		hook.drawline(&hook);
-		
 		setfillcolor(YELLOW);
 		setlinecolor(YELLOW);
 		fillrectangle(0, 0, width, 120);
-		Mine::putValueSum();
 		putimage(0, 120, imgs + 4);
-		hook.H_Round(&hook);
 		hook.putsole();
+		hook.drawline(&hook);
+		Mine::putValueSum();
+		put_exitReminder();
+		hook.H_Round(&hook);
+		
 		for (int i = 0; i < Mine_Quantity; i++)
 		{
 			(mine + i)->M_Putimage(mine + i);
@@ -460,5 +475,10 @@ int main()
 		
 
 	};
-	
+	return 0;
 };
+int main()
+{
+	GoldMiner();
+	//thread goldminer(GoldMiner);生成线程失败；
+}
