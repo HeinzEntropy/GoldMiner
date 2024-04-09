@@ -12,7 +12,7 @@ using namespace std;
 #define height 720
 #define IMGS_QUANTITY 5
 #define PI 3.1415926535
-constexpr auto Mine_Quantity = (const int)18;
+constexpr int Mine_Quantity = (const int)18;
 
 //矿藏的坐标结构体
 typedef struct mine_location{
