@@ -190,7 +190,7 @@ Mine::Mine()
 		y = p->y;
 		size = p->size;
 	};
-	//控制台打印信息，不影响游玩（反正也关不掉控制台
+	//控制台打印信息，不影响游戏（反正也关不掉控制台
 	cout << "X is " << x << "," << "Y is " << y << "," << "Its size is " << size << endl;
 	//矿的数量计量
 	static int Mine_count = 0;
@@ -241,14 +241,13 @@ private:
 	//私有内容
 	int x;
 	int y;
-
 	IMAGE hookimage1, hookimage2;
 	IMAGE soleimage1, soleimage2;
 };
 
 Hook::Hook()
 {
-	//构造函数
+	//初始化矿钩状态
 	state = normal;
 	x = width / 2;
 	y = 120 - 20;
@@ -259,10 +258,11 @@ Hook::Hook()
 	ey = sin(angle) * length + y;
 	setlinecolor(BROWN);
 	setlinestyle(PS_COSMETIC, 5);
+	//初始化矿绳
 	line(x, y, ex, ey);
+	//加载矿工图片
 	loadimage(&soleimage1, "./file/images/char1.jpg", width / 8, height / 8);
 	loadimage(&soleimage2, "./file/images/char1_mask.jpg", width / 8, height / 8);
-
 }
 
 Hook::~Hook()
@@ -283,7 +283,6 @@ bool Hook::collisiondetection(Mine* mine, Hook* hook)
 		};
 	};
 	return false;
-
 }
 
 void Hook::H_Round(Hook* hook)
@@ -318,8 +317,6 @@ void Hook::H_Round(Hook* hook)
 		line(x, y, ex, ey);
 	};
 };
-
-
 //矿钩伸长的函数
 void Hook::H_Extending(Mine* mine, Hook* hook)
 {
