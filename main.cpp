@@ -14,11 +14,6 @@ using namespace std;
 #define PI 3.1415926535
 constexpr auto Mine_Quantity = (const int)18;
 
-IMAGE imgs[IMGS_QUANTITY];
-IMAGE imgbk[11];
-IMAGE img[10];
-IMAGE imgl[3];
-
 //矿藏的坐标结构体
 typedef struct mine_location{
 	int x;
@@ -424,7 +419,6 @@ int GoldMiner()
 {
 	srand((unsigned)time(NULL));//生成随机数种子
 	initgraph(width, height);
-	putimage(0, 120, imgs + 4);
 	//生成类对象
 	BeginBatchDraw();
 	Mine mine[Mine_Quantity];
