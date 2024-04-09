@@ -323,6 +323,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 			hook->state = extending;//¸Ä±ä×´Ì¬
 			while (true)
 			{
+				GetAsyncKeyState(32);
 				BeginBatchDraw();
 				Sleep(1);
 				if (hook->state == extending)
