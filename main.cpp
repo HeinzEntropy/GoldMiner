@@ -38,21 +38,6 @@ void putbackgraound()
 	putimage(0, 120, &backgroundimage);
 }
 
-//钩子方向
-enum Hook_Direction
-{
-	left,
-	right
-};
-
-//钩子状态
-enum Hook_State
-{
-	normal,
-	extending,
-	shortening
-};
-
 class Mine
 {
 	//友元矿钩
@@ -208,6 +193,22 @@ Mine::~Mine()
 	//考虑在增加关卡时实现析构函数
 	cout << "Object has been deleted" << endl;
 }
+
+
+//钩子方向
+enum Hook_Direction
+{
+	left,
+	right
+};
+
+//钩子状态
+enum Hook_State
+{
+	normal,
+	extending,
+	shortening
+};
 
 //矿钩类型
 class Hook
