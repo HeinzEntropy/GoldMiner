@@ -413,48 +413,7 @@ void Hook::putsole()
 	putimage(width / 2, 60, &soleimage1, SRCAND);
 }
 ;
-/*该部分不能使用
-//声明一个监听Windows键盘事件的HHook函数
-LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) 
-{
-	if (code == HC_ACTION) {
-		PKBDLLHOOKSTRUCT p = (PKBDLLHOOKSTRUCT)lParam;
-		if (wParam == WM_KEYDOWN) {
-			static DWORD last_click_time = 0;
-			static int click_count = 0;
-			DWORD current_time = GetTickCount();
-			if (current_time - last_click_time < 500) { // 双击的时间间隔，这里设置为500毫秒
-				click_count++;
-			}
-			else {
-				click_count = 1;
-			}
-			last_click_time = current_time;
-			if (click_count == 2) {
-				std::cout << "Double click detected!" << std::endl;
-				click_count = 0; // 重置点击计数
-			}
-		}
-	}
-	return CallNextHookEx(NULL, code, wParam, lParam);
-}
-int getkeyboardstate() 
-{
-	HHOOK hook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, NULL, 0);
-	if (!hook) {
-		std::cerr << "Failed to install hook." << std::endl;
-		return 1;
-	}
 
-	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0)) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-
-	UnhookWindowsHookEx(hook);
-	return 0;
-}*/
 
 
 
@@ -498,8 +457,7 @@ int main()
 		{
 			break;
 		};
-		//以下程序有错误，不能使用
-		//thread keyboardhook(getkeyboardstate);
+		
 
 	};
 	
