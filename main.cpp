@@ -424,7 +424,6 @@ int GoldMiner()
 	Mine mine[Mine_Quantity];
 	Hook hook;
 	EndBatchDraw();
-
 	while (true)
 	{
 		Sleep(10);
