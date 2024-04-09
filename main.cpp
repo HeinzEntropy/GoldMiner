@@ -58,14 +58,11 @@ enum Hook_State
 	shortening
 };
 
-
-
-
-
 class Mine
 {
 	//友元矿钩
 	friend class Hook;
+
 public:
 	Mine();
 	~Mine();
@@ -75,10 +72,6 @@ public:
 	static int Value_Sum;
 	static void putValueSum();
 	void M_Putimages(Mine* mine, int M_quantity);
-	//friend void H_Extending(Mine* mine, Hook* hook);
-	//void M_LocationChange(Mine *mine,Hook *hook);
-	//Mine_Location *M_LocationInit();
-	//void create_xysize(int* count, Mine_Location* h);
 
 private:
 	//创建精灵图和掩码图
@@ -91,13 +84,10 @@ private:
 	int value;
 	//矿的存在性
 	bool exist;
-	
-	
+
 };
 //Mine类的静态变量集中初始化区
 int Mine::Value_Sum = 0;
-
-
 
 void Mine::putValueSum()
 {
@@ -105,10 +95,8 @@ void Mine::putValueSum()
 	settextcolor(BLUE);
 	settextstyle(width / 12, height / 18, _T("宋体"));
 	static TCHAR ValueSum[50];
-	//sprintf()
 	sprintf_s(ValueSum, _T("得分：%d"), Mine::Value_Sum);
 	outtextxy(0, 0, ValueSum);
-
 }
 
 void Mine::M_Putimages(Mine* mine, int M_quantity)
@@ -119,17 +107,9 @@ void Mine::M_Putimages(Mine* mine, int M_quantity)
 	};
 }
 
-
-
 //重新放置照片
 void Mine::M_Putimage(Mine* mine)
 {
-	//检测是否应该存在并被放置
-	/*if (mine->y <= 160)
-	{
-		mine->exist = false;
-		Mine::Value_Sum = Mine::Value_Sum + mine->value;
-	};*/
 	if (mine->exist == true)//不存在则不放置
 	{
 		if (mine->y <= 160 && (mine->x>=width/16*6&&mine->x<=width/16*10))
