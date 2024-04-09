@@ -30,6 +30,9 @@ typedef struct mine_location{
 //加载背景
 void putbackgraound()
 {
+	setfillcolor(YELLOW);
+	setlinecolor(YELLOW);
+	fillrectangle(0, 0, width, 120);
 	static bool flag = true;
 	static IMAGE backgroundimage;
 	if (flag == true)
@@ -100,7 +103,7 @@ void Mine::putValueSum()
 {
 	setbkmode(TRANSPARENT);
 	settextcolor(BLUE);
-	settextstyle(width / 8, height / 16, _T("宋体"));
+	settextstyle(width / 12, height / 18, _T("宋体"));
 	static TCHAR ValueSum[50];
 	//sprintf()
 	sprintf_s(ValueSum, _T("得分：%d"), Mine::Value_Sum);
@@ -355,16 +358,10 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					hook->length += 5;
 					//绘制
 					hook->drawline(hook);
-					setfillcolor(YELLOW);
-					setlinecolor(YELLOW);
-					fillrectangle(0, 0, width, 120);
-					putimage(0, 120, imgs + 4);
+					putbackgraound();
 					hook->H_Round(hook);
 					hook->drawline(hook);
-					for (int i = 0; i < Mine_Quantity; i++)
-					{
-						(mine + i)->M_Putimage(mine + i);
-					};
+					mine->M_Putimages(mine, Mine_Quantity);
 				};
 				//碰撞到矿藏时矿钩缩短
 				for (int i = 0; i < Mine_Quantity; i++)
@@ -373,7 +370,6 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					{
 						hook->state = shortening;
 						cout << "hook->state = shortening;" << hook->state << " 1" << endl;
-						//break;
 					};
 					(mine + i)->M_Putimage(mine + i);
 				};
@@ -382,14 +378,10 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 				{
 					hook->state = shortening;
 					cout << "hook->state = shortening;" << hook->state << " 2" << endl;
-					//break;
 				};
+				//矿钩缩短时的画面绘制
 				if (hook->state == shortening)
 				{
-					setfillcolor(YELLOW);
-					setlinecolor(YELLOW);
-					fillrectangle(0, 0, width, 120);
-					//putimage(0, 120, imgs + 4);
 					putbackgraound();
 					hook->H_Round(hook);
 					hook->drawline(hook);
@@ -402,7 +394,6 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 						hook->state = normal;
 						break;
 					};
-					//putinterface(mine, hook);
 				};
 				EndBatchDraw();
 			};
@@ -442,11 +433,8 @@ void put_exitReminder()
 void putinterface(Mine *mine,Hook *hook)
 {
 	BeginBatchDraw();
-	setfillcolor(YELLOW);
-	setlinecolor(YELLOW);
-	fillrectangle(0, 0, width, 120);
-	Mine::putValueSum();
 	putbackgraound();
+	Mine::putValueSum();
 	hook->putsole();
 	hook->drawline(hook);
 	put_exitReminder();
@@ -457,13 +445,9 @@ void putinterface(Mine *mine,Hook *hook)
 
 int GoldMiner()
 {
-	//Mine::Value_Sum = 0;
 	srand((unsigned)time(NULL));//生成随机数种子
 	initgraph(width, height);
-	//loadbackgraound();原代码已被更改现已失效
 	putimage(0, 120, imgs + 4);
-
-	//cout <<"RAND_MAX is " << RAND_MAX << endl;
 	//生成类对象
 	BeginBatchDraw();
 	Mine mine[Mine_Quantity];
@@ -486,5 +470,4 @@ int GoldMiner()
 int main()
 {
 	GoldMiner();
-	//thread goldminer(GoldMiner);生成线程失败；
 }
