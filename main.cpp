@@ -419,12 +419,12 @@ void Hook::drawline(Hook* hook)
 	hook->ey = sin(hook->angle) * hook->length + hook->y;
 	line(hook->x, hook->y, hook->ex, hook->ey);
 }
+
 void Hook::putsole()
 {
 	putimage(width / 2-20, 60-5, &soleimage2, SRCPAINT);
 	putimage(width / 2-20, 60-5, &soleimage1, SRCAND);
 }
-;
 
 void put_exitReminder()
 {
@@ -433,7 +433,6 @@ void put_exitReminder()
 	settextstyle(width / 24, height / 32, _T("宋体"));
 	static TCHAR reminder1[50];
 	static TCHAR reminder2[50];
-
 	sprintf_s(reminder1, _T("按ESC键退出游戏"));
 	sprintf_s(reminder2, _T("按P键下一关游戏"));
 	outtextxy(width / 16 * 11, 0, reminder1);
@@ -452,15 +451,9 @@ void putinterface(Mine *mine,Hook *hook)
 	hook->drawline(hook);
 	put_exitReminder();
 	hook->H_Round(hook);
-
-	/*for (int i = 0; i < Mine_Quantity; i++)
-	{
-		(mine + i)->M_Putimage(mine + i);
-	};*/
 	mine->M_Putimages(mine, Mine_Quantity);
 	EndBatchDraw();
 }
-
 
 int GoldMiner()
 {
@@ -481,34 +474,15 @@ int GoldMiner()
 	{
 		Sleep(10);
 		hook.H_Extending(mine, &hook);
-		/*BeginBatchDraw();
-		setfillcolor(YELLOW);
-		setlinecolor(YELLOW);
-		fillrectangle(0, 0, width, 120);
-		//putimage(0, 120, imgs + 4);
-		Mine::putValueSum();
-		putbackgraound();
-		hook.putsole();
-		hook.drawline(&hook);
-		put_exitReminder();
-		hook.H_Round(&hook);
-		
-		for (int i = 0; i < Mine_Quantity; i++)
-		{
-			(mine + i)->M_Putimage(mine + i);
-		};
-		EndBatchDraw();*/
 		putinterface(mine, &hook);
-		
 		if (GetAsyncKeyState(27) != 0)
 		{
 			break;
 		};
-		
-
 	};
 	return 0;
 };
+
 int main()
 {
 	GoldMiner();
