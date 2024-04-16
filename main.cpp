@@ -440,39 +440,6 @@ int GoldMiner()
 };
 
 //双击检测的函数
-/*void DoubleTick_Detection()
-{
-	static int g_clickCount = 0;
-	static DWORD g_lastClickTime = 0;
-	
-	while(true)
-	{
-		DWORD current_time = GetTickCount();
- 		if (current_time - g_lastClickTime < 100) { // 双击的时间间隔，这里设置为500毫秒
-			g_clickCount++;
-		}
-		else {
-			g_clickCount = 1;
-			//std::cout << "g_clickCount is: " << g_clickCount << std::endl;
-
-		}
-		g_lastClickTime = current_time;
-		if (g_clickCount == 2) {
-			// 双击事件处理
-			std::cout << "Double click detected! " << "g_clickCount is: " << g_clickCount << std::endl;
-			g_clickCount = 0; // 重置点击计数
-			std::cout << "g_clickCount is: " << g_clickCount << std::endl;
-
-
-		}
-		if (GetAsyncKeyState(27) != 0)
-		{
-			break;
-		};
-	}
-	return;
-}*/
-//双击检测的函数
 void DoubleTick_Detection(int *flag)
 {
 	static int g_clickCount = 0;
@@ -519,7 +486,8 @@ void DoubleTick_Detection(int *flag)
 
 int main()
 {
-	int* flag = 0;
+	int *flag = new int;
+	*flag = 0;
 	thread t1(DoubleTick_Detection,flag);
 	GoldMiner();
 	t1.join();
