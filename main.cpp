@@ -482,7 +482,6 @@ void shopinit()//商店初始化
 		//liquid[i].type = rand() % 4 + 1;
 		liquid[i].flag = true;
 	}
-
 }
 void shopping()
 {
@@ -569,6 +568,7 @@ void shopping()
 	}
 	EndBatchDraw();
 };
+
 //主游戏函数
 int GoldMiner()
 {
@@ -600,23 +600,18 @@ void DoubleTick_Detection(int *flag)
 	DWORD current_time = 0;
 	while (true)
 	{
-
-		/*if (g_clickCount < 2)
-		{
-			g_lastClickTime = GetTickCount();
-		}*/
 		if (GetAsyncKeyState(32))
 		{
 			current_time = GetTickCount();
 			if (current_time - g_lastClickTime < 500 && current_time - g_lastClickTime > 50)
-			{ // 双击的时间间隔，这里设置为500毫秒
+			{ 
+				// 双击的时间间隔，这里设置为500毫秒
 				cout << "current_time is: " << current_time << endl << "g_lastClickTime is: " << g_lastClickTime << endl;
 				g_clickCount++;
 			}
 			else {
 				g_clickCount = 1;
 				*flag = 0;
-				//std::cout << "g_clickCount is: " << g_clickCount << std::endl;
 			}
 		}
 
@@ -626,7 +621,8 @@ void DoubleTick_Detection(int *flag)
 			// 双击事件处理
 			std::cout << "Double click detected! " << "g_clickCount is: " << g_clickCount << std::endl;
 			*flag = 1;
-			g_clickCount = 0; // 重置点击计数
+			// 重置点击计数
+			g_clickCount = 0;
 			std::cout << "g_clickCount is: " << g_clickCount << std::endl;
 		}
 		if (GetAsyncKeyState(27) != 0)
