@@ -411,7 +411,7 @@ void put_exitReminder()
 	static TCHAR reminder1[50];
 	static TCHAR reminder2[50];
 	sprintf_s(reminder1, _T("按ESC键退出游戏"));
-	sprintf_s(reminder2, _T("按P键下一关游戏"));
+	sprintf_s(reminder2, _T("按P键进入商店"));
 	outtextxy(width / 16 * 11, 0, reminder1);
 	outtextxy(width / 16 * 11, height / 16, reminder2);
 }
@@ -492,6 +492,7 @@ void shopping()
 	MOUSEMSG shopm;
 	while (1)
 	{
+		GetAsyncKeyState(27);
 		putimage(0, 0, &shopbkimg);
 		char score2[30] = "";//分数
 		sprintf_s(score2, "分数:%d", Mine::getValeSum());
@@ -587,6 +588,10 @@ int GoldMiner()
 		if (GetAsyncKeyState(27) != 0)
 		{
 			break;
+		}
+		else if (GetAsyncKeyState('P'))
+		{
+			shopping();
 		};
 	};
 	return 0;
