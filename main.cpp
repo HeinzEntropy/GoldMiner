@@ -92,7 +92,7 @@ void Mine::M_Putimage(Mine* mine)
 {
 	if (mine->exist == true)//不存在则不放置
 	{
-		if (mine->y <= 160 && (mine->x>=width/16*6&&mine->x<=width/16*10))
+		if (mine->y <= 165 && (mine->x>=width/16*6&&mine->x<=width/16*10))
 		{
 			mine->exist = false;
 			Mine::Value_Sum = Mine::Value_Sum + mine->value;
@@ -374,7 +374,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 		};
 	};
 }
-
+//画线函数
 void Hook::drawline(Hook* hook)
 {
 	Hook::putsole();
@@ -384,13 +384,13 @@ void Hook::drawline(Hook* hook)
 	hook->ey = sin(hook->angle) * hook->length + hook->y;
 	line(hook->x, hook->y, hook->ex, hook->ey);
 }
-
+//放置矿工图像
 void Hook::putsole()
 {
 	putimage(width / 2-20, 60-5, &soleimage2, SRCPAINT);
 	putimage(width / 2-20, 60-5, &soleimage1, SRCAND);
 }
-
+//放置退出提醒的文字
 void put_exitReminder()
 {
 	setbkmode(TRANSPARENT);
@@ -403,7 +403,7 @@ void put_exitReminder()
 	outtextxy(width / 16 * 11, 0, reminder1);
 	outtextxy(width / 16 * 11, height / 16, reminder2);
 }
-
+//放置界面元素
 void putinterface(Mine *mine,Hook *hook)
 {
 	BeginBatchDraw();
@@ -416,7 +416,7 @@ void putinterface(Mine *mine,Hook *hook)
 	mine->M_Putimages(mine, Mine_Quantity);
 	EndBatchDraw();
 }
-
+//主游戏函数
 int GoldMiner()
 {
 	srand((unsigned)time(NULL));//生成随机数种子
@@ -439,7 +439,89 @@ int GoldMiner()
 	return 0;
 };
 
+//双击检测的函数
+/*void DoubleTick_Detection()
+{
+	static int g_clickCount = 0;
+	static DWORD g_lastClickTime = 0;
+	
+	while(true)
+	{
+		DWORD current_time = GetTickCount();
+ 		if (current_time - g_lastClickTime < 100) { // 双击的时间间隔，这里设置为500毫秒
+			g_clickCount++;
+		}
+		else {
+			g_clickCount = 1;
+			//std::cout << "g_clickCount is: " << g_clickCount << std::endl;
+
+		}
+		g_lastClickTime = current_time;
+		if (g_clickCount == 2) {
+			// 双击事件处理
+			std::cout << "Double click detected! " << "g_clickCount is: " << g_clickCount << std::endl;
+			g_clickCount = 0; // 重置点击计数
+			std::cout << "g_clickCount is: " << g_clickCount << std::endl;
+
+
+		}
+		if (GetAsyncKeyState(27) != 0)
+		{
+			break;
+		};
+	}
+	return;
+}*/
+//双击检测的函数
+void DoubleTick_Detection(int *flag)
+{
+	static int g_clickCount = 0;
+	static DWORD g_lastClickTime = 0;
+	DWORD current_time = 0;
+	while (true)
+	{
+
+		/*if (g_clickCount < 2)
+		{
+			g_lastClickTime = GetTickCount();
+		}*/
+		if (GetAsyncKeyState(32))
+		{
+			current_time = GetTickCount();
+			if (current_time - g_lastClickTime < 500 && current_time - g_lastClickTime > 50)
+			{ // 双击的时间间隔，这里设置为500毫秒
+				cout << "current_time is: " << current_time << endl << "g_lastClickTime is: " << g_lastClickTime << endl;
+				g_clickCount++;
+			}
+			else {
+				g_clickCount = 1;
+				*flag = 0;
+				//std::cout << "g_clickCount is: " << g_clickCount << std::endl;
+			}
+		}
+
+		g_lastClickTime = current_time;
+		//g_lastClickTime = GetTickCount();
+		if (g_clickCount == 2) {
+			// 双击事件处理
+			std::cout << "Double click detected! " << "g_clickCount is: " << g_clickCount << std::endl;
+			*flag = 1;
+			g_clickCount = 0; // 重置点击计数
+			std::cout << "g_clickCount is: " << g_clickCount << std::endl;
+		}
+		if (GetAsyncKeyState(27) != 0)
+		{
+			break;
+		};
+	}
+	return;
+}
+
 int main()
 {
+	int* flag = 0;
+	thread t1(DoubleTick_Detection,flag);
 	GoldMiner();
+	t1.join();
+	
 }
