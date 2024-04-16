@@ -342,12 +342,12 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 				GetAsyncKeyState(32);/*阻塞空格键*/
 				GetAsyncKeyState(27);/*阻塞ESC键*/
 				GetAsyncKeyState('P');/*阻塞P键*/
-				BeginBatchDraw();
 				Sleep(1);
+				BeginBatchDraw();
 				if (hook->state == extending)
 				{
-					hook->length += Extend_length;
 					//绘制
+					hook->length += Extend_length;
 					hook->drawline(hook);
 					putbackgraound();
 					hook->H_Round(hook);
@@ -378,6 +378,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					hook->drawline(hook);
 					mine->M_Putimages(mine, Mine_Quantity);
 					hook->length -= Extend_length;
+					cout << "Hook::Hook_Speed is: " << Hook::Hook_Speed << endl;
 					cout << "hook->length -= " << Extend_length << ";" << endl;
 					if (hook->length <= width / 16)
 					{
@@ -438,8 +439,9 @@ enum liquidtype//药水
 {
 	s_super = 16,//超大力药水
 	super = 8,//大力药水
-	s_slow = 1,//超缓慢药水
+	norm=4,//普通药水
 	slow = 2,//缓慢药水
+	s_slow = 1,//超缓慢药水
 };
 
 struct Liquid
@@ -468,7 +470,7 @@ void shopinit()//商店初始化
 	//srand(GetTickCount());
 	for (int i = 0; i < Liquid_Quantity; i++)
 	{
-		int liquidtypeswitch = rand() % 4 + 1;
+		int liquidtypeswitch = rand() % 5 + 1;
 		switch (liquidtypeswitch)
 		{
 		case 1:
@@ -478,9 +480,12 @@ void shopinit()//商店初始化
 			liquid[i].type = super;
 			break;
 		case 3:
-			liquid[i].type = s_slow;
+			liquid[i].type = norm;
 			break;
 		case 4:
+			liquid[i].type = s_slow;
+			break;
+		case 5:
 			liquid[i].type = slow;
 			break;
 		}
@@ -488,6 +493,8 @@ void shopinit()//商店初始化
 		liquid[i].flag = true;
 	}
 }
+
+//商店函数
 void shopping()
 {
 	//sole.state = 0;
@@ -530,6 +537,9 @@ void shopping()
 				case slow:
 					sprintf_s(name, "您获得缓慢药水，钩子速度减慢!");
 					break;
+				case norm:
+					sprintf_s(name, "您获得普通药水，清除负面（和正面）效果!");
+					break;
 				}
 				settextcolor(RED);//字体颜色
 				setbkmode(TRANSPARENT);//背景透明化
@@ -538,6 +548,7 @@ void shopping()
 			}
 		}
 		shopm = GetMouseMsg();
+		int Cost = 200;/*药水价格*/
 		if (shopm.uMsg == WM_LBUTTONDOWN)
 		{
 			if ((shopm.x > liquid[0].x && shopm.x < (liquid[0].x + liquid[0].size)) && (shopm.y > liquid[0].y && shopm.y < (liquid[0].y + liquid[0].size)))
@@ -546,25 +557,25 @@ void shopping()
 				Hook::Hook_Speed = liquid[0].type;
 				liquid[0].flag = false;
 				type = liquid[0].type;
-				Mine::Value_Sum -= 200;
+				Mine::Value_Sum -= Cost;
 				continue;
 			}
 			if ((shopm.x > liquid[1].x && shopm.x < (liquid[1].x + liquid[1].size)) && (shopm.y > liquid[1].y && shopm.y < (liquid[1].y + liquid[1].size)))
 			{
 				//mciSendString("play shopmusic.mp3 ", NULL, 0, NULL);
-				Hook::Hook_Speed = liquid[0].type;
+				Hook::Hook_Speed = liquid[1].type;
 				liquid[1].flag = false;
 				type = liquid[1].type;
-				Mine::Value_Sum -= 200;
+				Mine::Value_Sum -= Cost;
 				continue;
 			}
 			if ((shopm.x > liquid[2].x && shopm.x < (liquid[2].x + liquid[2].size)) && (shopm.y > liquid[2].y && shopm.y < (liquid[2].y + liquid[2].size)))
 			{
 				//mciSendString("play shopmusic.mp3", NULL, 0, NULL);
-				Hook::Hook_Speed = liquid[0].type;
+				Hook::Hook_Speed = liquid[2].type;
 				liquid[2].flag = false;
 				type = liquid[2].type;
-				Mine::Value_Sum -= 200;
+				Mine::Value_Sum -= Cost;
 				continue;
 			}
 			if ((shopm.x > 832.5 && shopm.x < 985.5) && (shopm.y > 110 && shopm.y < 250))
