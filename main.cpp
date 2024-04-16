@@ -12,6 +12,7 @@ using namespace std;
 #define height 720
 #define IMGS_QUANTITY 5
 #define PI 3.1415926535
+#define Liquid_Quantity 3
 constexpr int Mine_Quantity = (const int)18;
 
 //矿藏的坐标结构体
@@ -50,6 +51,7 @@ public:
 	void M_loadimage();
 	void M_Putimage(Mine *mine);
 	static int Value_Sum;
+	static int getValeSum();
 	static void putValueSum();
 	void M_Putimages(Mine* mine, int M_quantity);
 
@@ -68,6 +70,11 @@ private:
 };
 //Mine类的静态变量集中初始化区
 int Mine::Value_Sum = 0;
+
+int Mine::getValeSum()
+{
+	return Mine::Value_Sum;
+}
 
 void Mine::putValueSum()
 {
@@ -232,6 +239,7 @@ public:
 	int ey;
 	int length;
 	Hook_State state;
+	static int Hook_Speed;
 
 private:
 	//私有内容
@@ -241,6 +249,10 @@ private:
 	IMAGE soleimage1, soleimage2;
 };
 
+//矿钩类的静态变量初始化区域
+int Hook::Hook_Speed = 4;
+
+//矿钩类的构造函数
 Hook::Hook()
 {
 	//初始化矿钩状态
@@ -416,6 +428,147 @@ void putinterface(Mine *mine,Hook *hook)
 	mine->M_Putimages(mine, Mine_Quantity);
 	EndBatchDraw();
 }
+
+enum liquidtype//药水
+{
+	s_super = 16,//超大力药水
+	super = 8,//大力药水
+	s_slow = 1,//超缓慢药水
+	slow = 2,//缓慢药水
+};
+
+struct Liquid
+{
+	int x;
+	int y;
+	int size = 120;
+	bool flag;
+	int type;
+}liquid[Liquid_Quantity];
+
+IMAGE shopbkimg;
+IMAGE LiquidIMG[Liquid_Quantity];
+
+void shopinit()//商店初始化
+{
+	loadimage(&shopbkimg, "./file/images/shop.png", width, height);//商店背景
+	loadimage(&LiquidIMG[0], "./file/images/liquid.jpg", liquid[0].size, liquid[0].size);
+	loadimage(&LiquidIMG[1], "./file/images/liquid2.jpg", liquid[1].size, liquid[1].size);
+	loadimage(&LiquidIMG[2], "./file/images/liquid3.jpg", liquid[2].size, liquid[2].size);
+	for (int i = 0; i < 3; i++)//初始化药水位置-------需要调节
+	{
+		liquid[i].x = 165 + i * 175;
+		liquid[i].y = 355;
+	}
+	//srand(GetTickCount());
+	for (int i = 0; i < Liquid_Quantity; i++)
+	{
+		int liquidtypeswitch = rand() % 4 + 1;
+		switch (liquidtypeswitch)
+		{
+		case 1:
+			liquid[i].type = s_super;
+			break;
+		case 2:
+			liquid[i].type = super;
+			break;
+		case 3:
+			liquid[i].type = s_slow;
+			break;
+		case 4:
+			liquid[i].type = slow;
+			break;
+		}
+		//liquid[i].type = rand() % 4 + 1;
+		liquid[i].flag = true;
+	}
+
+}
+void shopping()
+{
+	//sole.state = 0;
+	shopinit();
+	BeginBatchDraw();
+	int type = 0;
+	MOUSEMSG shopm;
+	while (1)
+	{
+		putimage(0, 0, &shopbkimg);
+		char score2[30] = "";//分数
+		sprintf_s(score2, "分数:%d", Mine::getValeSum());
+		settextcolor(WHITE);//字体颜色
+		setbkmode(TRANSPARENT);//背景透明化
+		settextstyle(50, 0, "黑体");
+		outtextxy(20, 20, score2);
+		for (int i = 0; i < Liquid_Quantity; i++)
+		{
+			if (liquid[i].flag == true)
+			{
+				putimage(liquid[i].x, liquid[i].y, &LiquidIMG[i]);
+			}
+			if (type != 0)
+			{
+				char name[50] = " ";//药水名字
+				switch (type)
+				{
+				case s_super:
+					sprintf_s(name, "您获得超·大力药水，钩子速度显著加快!");
+					break;
+				case super:
+					sprintf_s(name, "您获得大力药水,钩子速度加快!");
+					break;
+				case s_slow:
+					sprintf_s(name, "您获得超·缓慢药水,钩子速度显著减慢!");
+					break;
+				case slow:
+					sprintf_s(name, "您获得缓慢药水，钩子速度减慢!");
+					break;
+				}
+				settextcolor(RED);//字体颜色
+				setbkmode(TRANSPARENT);//背景透明化
+				settextstyle(50, 0, "黑体");
+				outtextxy(100, 550, name);
+			}
+		}
+		shopm = GetMouseMsg();
+		if (shopm.uMsg == WM_LBUTTONDOWN)
+		{
+			if ((shopm.x > liquid[0].x && shopm.x < (liquid[0].x + liquid[0].size)) && (shopm.y > liquid[0].y && shopm.y < (liquid[0].y + liquid[0].size)))
+			{
+				mciSendString("play shopmusic.mp3", NULL, 0, NULL);//音效
+				Hook::Hook_Speed = liquid[0].type;
+				liquid[0].flag = false;
+				type = liquid[0].type;
+				Mine::Value_Sum -= 200;
+				continue;
+			}
+			if ((shopm.x > liquid[1].x && shopm.x < (liquid[1].x + liquid[1].size)) && (shopm.y > liquid[1].y && shopm.y < (liquid[1].y + liquid[1].size)))
+			{
+				mciSendString("play shopmusic.mp3 ", NULL, 0, NULL);
+				Hook::Hook_Speed = liquid[0].type;
+				liquid[1].flag = false;
+				type = liquid[1].type;
+				Mine::Value_Sum -= 200;
+				continue;
+			}
+			if ((shopm.x > liquid[2].x && shopm.x < (liquid[2].x + liquid[2].size)) && (shopm.y > liquid[2].y && shopm.y < (liquid[2].y + liquid[2].size)))
+			{
+				mciSendString("play shopmusic.mp3", NULL, 0, NULL);
+				Hook::Hook_Speed = liquid[0].type;
+				liquid[2].flag = false;
+				type = liquid[2].type;
+				Mine::Value_Sum -= 200;
+				continue;
+			}
+			if ((shopm.x > 832.5 && shopm.x < 985.5) && (shopm.y > 110 && shopm.y < 250))
+			{
+				break;
+			}
+		}
+		FlushBatchDraw();
+	}
+	EndBatchDraw();
+};
 //主游戏函数
 int GoldMiner()
 {
