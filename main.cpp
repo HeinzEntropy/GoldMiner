@@ -491,5 +491,4 @@ int main()
 	thread t1(DoubleTick_Detection,flag);
 	GoldMiner();
 	t1.join();
-	
 }
