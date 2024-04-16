@@ -328,6 +328,8 @@ void Hook::H_Round(Hook* hook)
 //矿钩伸长的函数
 void Hook::H_Extending(Mine* mine, Hook* hook)
 {
+	static int Extend_length;
+	//Extend_length = Hook::Hook_Speed;
 	if (hook->state == normal)//矿钩不正常不应当读取新的状态
 	{
 		if (GetAsyncKeyState(32) != 0&&hook->state==normal)//按下空格开始伸长
@@ -336,12 +338,15 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 			hook->state = extending;//改变状态
 			while (true)
 			{
-				GetAsyncKeyState(32);
+				Extend_length = Hook::Hook_Speed;
+				GetAsyncKeyState(32);/*阻塞空格键*/
+				GetAsyncKeyState(27);/*阻塞ESC键*/
+				GetAsyncKeyState('P');/*阻塞P键*/
 				BeginBatchDraw();
 				Sleep(1);
 				if (hook->state == extending)
 				{
-					hook->length += 5;
+					hook->length += Extend_length;
 					//绘制
 					hook->drawline(hook);
 					putbackgraound();
@@ -372,8 +377,8 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					hook->H_Round(hook);
 					hook->drawline(hook);
 					mine->M_Putimages(mine, Mine_Quantity);
-					hook->length -= 5;
-					cout << "hook->length -= 5;" << endl;
+					hook->length -= Extend_length;
+					cout << "hook->length -= " << Extend_length << ";" << endl;
 					if (hook->length <= width / 16)
 					{
 						hook->length = width / 16;
@@ -492,7 +497,9 @@ void shopping()
 	MOUSEMSG shopm;
 	while (1)
 	{
-		GetAsyncKeyState(27);
+		GetAsyncKeyState('P');/*阻塞P键*/
+		GetAsyncKeyState(27);/*阻塞ESC键*/
+		GetAsyncKeyState(32);/*阻塞空格键*/
 		putimage(0, 0, &shopbkimg);
 		char score2[30] = "";//分数
 		sprintf_s(score2, "分数:%d", Mine::getValeSum());
