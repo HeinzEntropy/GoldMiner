@@ -13,7 +13,7 @@ using namespace std;
 #define IMGS_QUANTITY 5
 #define PI 3.1415926535
 #define Liquid_Quantity 3
-constexpr int Mine_Quantity = (const int)18;
+#define Mine_Quantity 18
 
 //矿藏的坐标结构体
 typedef struct mine_location{
@@ -54,6 +54,7 @@ public:
 	static int getValeSum();
 	static void putValueSum();
 	void M_Putimages(Mine* mine, int M_quantity);
+	bool M_Runout(Mine* mine);
 
 private:
 	//创建精灵图和掩码图
@@ -93,6 +94,19 @@ void Mine::M_Putimages(Mine* mine, int M_quantity)
 	{
 		(mine + i)->M_Putimage(mine + i);
 	};
+}
+
+bool Mine::M_Runout(Mine* mine)
+{
+	for (int i = 0; i < Mine_Quantity; i++)
+	{
+		if (((mine+i)->exist) == true)
+		{
+			cout << "循环次数" << i << endl;
+			return false;
+		};
+	};
+	return true;
 }
 
 //重新放置照片
@@ -590,6 +604,29 @@ void shopping()
 	EndBatchDraw();
 };
 
+void Ending()
+{
+	IMAGE end;
+	loadimage(&end, "./file/images/over.png", width, height);
+	putimage(0, 0, &end);
+	setbkmode(TRANSPARENT);
+	settextcolor(BLUE);
+	settextstyle(width / 24, height / 32, _T("宋体"));
+	static TCHAR reminder1[50];
+	//static TCHAR reminder2[50];
+	sprintf_s(reminder1, _T("按ESC键退出游戏"));
+	//sprintf_s(reminder2, _T("按P键进入商店"));
+	outtextxy(width / 16 * 11, 0, reminder1);
+	//outtextxy(width / 16 * 11, height / 16, reminder2);
+	while (true)
+	{
+		if (GetAsyncKeyState(27) != 0)
+		{
+			break;
+		};
+	};
+};
+
 //主游戏函数
 int GoldMiner()
 {
@@ -613,6 +650,11 @@ int GoldMiner()
 		{
 			shopping();
 		};
+		if (mine->M_Runout(mine)==true)
+		{
+			Ending();
+			break;
+		}
 	};
 	return 0;
 };
