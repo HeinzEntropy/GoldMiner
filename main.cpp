@@ -102,7 +102,7 @@ bool Mine::M_Runout(Mine* mine)
 	{
 		if (((mine+i)->exist) == true)
 		{
-			cout << "循环次数" << i << endl;
+			//cout << "循环次数" << i << endl;
 			return false;
 		};
 	};
@@ -345,6 +345,7 @@ void Hook::H_Round(Hook* hook)
 void Hook::H_Extending(Mine* mine, Hook* hook)
 {
 	static int Extend_length;
+	static Mine hookmine;
 	//Extend_length = Hook::Hook_Speed;
 	if (hook->state == normal)//矿钩不正常不应当读取新的状态
 	{
@@ -376,6 +377,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					if (hook->collisiondetection(mine + i, hook) == true)
 					{
 						hook->state = shortening;
+						(mine + i)->bandage = true;
 						cout << "hook->state = shortening;" << hook->state << " 1" << endl;
 					};
 					(mine + i)->M_Putimage(mine + i);
@@ -699,10 +701,10 @@ void DoubleTick_Detection(int *flag)
 	}
 	return;
 }
+int *flag = new int;
 
 int main()
 {
-	int *flag = new int;
 	*flag = 0;
 	thread t1(DoubleTick_Detection,flag);
 	GoldMiner();
