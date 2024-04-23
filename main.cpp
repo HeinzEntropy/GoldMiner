@@ -66,7 +66,8 @@ private:
 	int value;
 	//矿的存在性
 	bool exist;
-
+	//矿是不是被勾住了
+	bool bandage;
 };
 //Mine类的静态变量集中初始化区
 int Mine::Value_Sum = 0;
@@ -287,6 +288,7 @@ bool Hook::collisiondetection(Mine* mine, Hook* hook)
 		{
 			mine->x = hook->ex - mine->size / 2;
 			mine->y = hook->ey - mine->size / 2;
+			mine->bandage = true;
 			return true;
 		};
 	};
