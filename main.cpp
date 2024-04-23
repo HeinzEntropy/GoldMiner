@@ -114,16 +114,8 @@ void Mine::M_Putimage(Mine* mine)
 {
 	if (mine->exist == true)//不存在则不放置
 	{
-		if (mine->y <= 165 && (mine->x>=width/16*6&&mine->x<=width/16*10))
-		{
-			mine->exist = false;
-			Mine::Value_Sum = Mine::Value_Sum + mine->value;
-		}
-		else 
-		{
 			putimage(mine->x, mine->y, &(mine->img1), SRCPAINT);
 			putimage(mine->x, mine->y, &(mine->img2), SRCAND);
-		};
 	};
 };
 
@@ -378,6 +370,9 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					{
 						hook->state = shortening;
 						(mine + i)->bandage = true;
+						(mine + i)->exist = false;
+						hookmine = *(mine + i);
+						hookmine.exist = true;
 						cout << "hook->state = shortening;" << hook->state << " 1" << endl;
 					};
 					(mine + i)->M_Putimage(mine + i);
@@ -395,11 +390,15 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					hook->H_Round(hook);
 					hook->drawline(hook);
 					mine->M_Putimages(mine, Mine_Quantity);
+					hookmine.x = ex - hookmine.size / 2;
+					hookmine.y = ey - hookmine.size / 2;
+					hookmine.M_Putimage(&hookmine);
 					hook->length -= Extend_length;
 					cout << "Hook::Hook_Speed is: " << Hook::Hook_Speed << endl;
 					cout << "hook->length -= " << Extend_length << ";" << endl;
 					if (hook->length <= width / 16)
 					{
+						hookmine.exist = false;
 						hook->length = width / 16;
 						hook->state = normal;
 						break;
