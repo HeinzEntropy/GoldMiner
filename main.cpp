@@ -371,6 +371,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 						hook->state = shortening;
 						(mine + i)->bandage = true;
 						(mine + i)->exist = false;
+						Mine::Value_Sum += (mine + i)->value;
 						hookmine = *(mine + i);
 						hookmine.exist = true;
 						cout << "hook->state = shortening;" << hook->state << " 1" << endl;
@@ -570,30 +571,40 @@ void shopping()
 		{
 			if ((shopm.x > liquid[0].x && shopm.x < (liquid[0].x + liquid[0].size)) && (shopm.y > liquid[0].y && shopm.y < (liquid[0].y + liquid[0].size)))
 			{
-				//mciSendString("play shopmusic.mp3", NULL, 0, NULL);//ÒôÐ§
-				Hook::Hook_Speed = liquid[0].type;
-				liquid[0].flag = false;
-				type = liquid[0].type;
-				Mine::Value_Sum -= Cost;
-				continue;
+				
+				if(Mine::Value_Sum >= Cost)
+				{
+					//mciSendString("play shopmusic.mp3", NULL, 0, NULL);//ÒôÐ§
+					Hook::Hook_Speed = liquid[0].type;
+					liquid[0].flag = false;
+					type = liquid[0].type;
+					Mine::Value_Sum -= Cost;
+					continue;
+				}
 			}
 			if ((shopm.x > liquid[1].x && shopm.x < (liquid[1].x + liquid[1].size)) && (shopm.y > liquid[1].y && shopm.y < (liquid[1].y + liquid[1].size)))
 			{
-				//mciSendString("play shopmusic.mp3 ", NULL, 0, NULL);
-				Hook::Hook_Speed = liquid[1].type;
-				liquid[1].flag = false;
-				type = liquid[1].type;
-				Mine::Value_Sum -= Cost;
-				continue;
+				if (Mine::Value_Sum >= Cost)
+				{
+					//mciSendString("play shopmusic.mp3 ", NULL, 0, NULL);
+					Hook::Hook_Speed = liquid[1].type;
+					liquid[1].flag = false;
+					type = liquid[1].type;
+					Mine::Value_Sum -= Cost;
+					continue;
+				}
 			}
 			if ((shopm.x > liquid[2].x && shopm.x < (liquid[2].x + liquid[2].size)) && (shopm.y > liquid[2].y && shopm.y < (liquid[2].y + liquid[2].size)))
 			{
-				//mciSendString("play shopmusic.mp3", NULL, 0, NULL);
-				Hook::Hook_Speed = liquid[2].type;
-				liquid[2].flag = false;
-				type = liquid[2].type;
-				Mine::Value_Sum -= Cost;
-				continue;
+				if (Mine::Value_Sum >= Cost)
+				{
+					//mciSendString("play shopmusic.mp3", NULL, 0, NULL);
+					Hook::Hook_Speed = liquid[2].type;
+					liquid[2].flag = false;
+					type = liquid[2].type;
+					Mine::Value_Sum -= Cost;
+					continue;
+				}
 			}
 			if ((shopm.x > 832.5 && shopm.x < 985.5) && (shopm.y > 110 && shopm.y < 250))
 			{
