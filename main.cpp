@@ -1,4 +1,4 @@
-#include<iostream>
+ï»¿#include<iostream>
 #include<graphics.h>
 #include<math.h>
 #include<cstdlib>
@@ -15,7 +15,7 @@ using namespace std;
 #define Liquid_Quantity 3
 #define Mine_Quantity 18
 
-//¿ó²ØµÄ×ø±ê½á¹¹Ìå
+//çŸ¿è—çš„åæ ‡ç»“æ„ä½“
 typedef struct mine_location{
 	int x;
 	int y;
@@ -23,7 +23,7 @@ typedef struct mine_location{
 	struct mine_location * next;
 }Mine_Location;
 
-//¼ÓÔØ±³¾°
+//åŠ è½½èƒŒæ™¯
 void putbackgraound()
 {
 	setfillcolor(YELLOW);
@@ -41,13 +41,13 @@ void putbackgraound()
 
 class Mine
 {
-	//ÓÑÔª¿ó¹³
+	//å‹å…ƒçŸ¿é’©
 	friend class Hook;
 
 public:
 	Mine();
 	~Mine();
-	//ÉùÃ÷Àà·½·¨
+	//å£°æ˜ç±»æ–¹æ³•
 	void M_loadimage();
 	void M_Putimage(Mine *mine);
 	static int Value_Sum;
@@ -57,20 +57,20 @@ public:
 	bool M_Runout(Mine* mine);
 
 private:
-	//´´½¨¾«ÁéÍ¼ºÍÑÚÂëÍ¼
+	//åˆ›å»ºç²¾çµå›¾å’Œæ©ç å›¾
 	IMAGE img1,img2;
-	//×ø±ê¼°Æä´óĞ¡
+	//åæ ‡åŠå…¶å¤§å°
 	int x;
 	int y;
 	int size;
-	//¿óµÄ¼ÛÖµ
+	//çŸ¿çš„ä»·å€¼
 	int value;
-	//¿óµÄ´æÔÚĞÔ
+	//çŸ¿çš„å­˜åœ¨æ€§
 	bool exist;
-	//¿óÊÇ²»ÊÇ±»¹´×¡ÁË
+	//çŸ¿æ˜¯ä¸æ˜¯è¢«å‹¾ä½äº†
 	bool bandage;
 };
-//MineÀàµÄ¾²Ì¬±äÁ¿¼¯ÖĞ³õÊ¼»¯Çø
+//Mineç±»çš„é™æ€å˜é‡é›†ä¸­åˆå§‹åŒ–åŒº
 int Mine::Value_Sum = 0;
 
 int Mine::getValeSum()
@@ -82,9 +82,9 @@ void Mine::putValueSum()
 {
 	setbkmode(TRANSPARENT);
 	settextcolor(BLUE);
-	settextstyle(width / 12, height / 18, _T("ËÎÌå"));
+	settextstyle(width / 12, height / 18, _T("å®‹ä½“"));
 	static TCHAR ValueSum[50];
-	sprintf_s(ValueSum, _T("µÃ·Ö£º%d"), Mine::Value_Sum);
+	sprintf_s(ValueSum, _T("å¾—åˆ†ï¼š%d"), Mine::Value_Sum);
 	outtextxy(0, 0, ValueSum);
 }
 
@@ -102,17 +102,17 @@ bool Mine::M_Runout(Mine* mine)
 	{
 		if (((mine+i)->exist) == true)
 		{
-			//cout << "Ñ­»·´ÎÊı" << i << endl;
+			//cout << "å¾ªç¯æ¬¡æ•°" << i << endl;
 			return false;
 		};
 	};
 	return true;
 }
 
-//ÖØĞÂ·ÅÖÃÕÕÆ¬
+//é‡æ–°æ”¾ç½®ç…§ç‰‡
 void Mine::M_Putimage(Mine* mine)
 {
-	if (mine->exist == true)//²»´æÔÚÔò²»·ÅÖÃ
+	if (mine->exist == true)//ä¸å­˜åœ¨åˆ™ä¸æ”¾ç½®
 	{
 			putimage(mine->x, mine->y, &(mine->img1), SRCPAINT);
 			putimage(mine->x, mine->y, &(mine->img2), SRCAND);
@@ -122,15 +122,15 @@ void Mine::M_Putimage(Mine* mine)
 
 void Mine::M_loadimage()
 {
-	//¼ÓÔØÕÕÆ¬
+	//åŠ è½½ç…§ç‰‡
 	cout <<"M_loadimage:" << "size is " << size << endl;
-	if (Mine::value <=1000)//½ÏµÍ¼ÛÖµ¼ÓÔØ½ğ¿ó
+	if (Mine::value <=1000)//è¾ƒä½ä»·å€¼åŠ è½½é‡‘çŸ¿
 	{
 		loadimage(&img1, "./file/images/small_gold_mask.bmp", size, size);
 		loadimage(&img2, "./file/images/small_gold.bmp", size, size);
 		cout << "M_loadimage:" << "size is " << size << endl;
 	}
-	else//½Ï¸ß¼ÛÖµ¼ÓÔØ×êÊ¯
+	else//è¾ƒé«˜ä»·å€¼åŠ è½½é’»çŸ³
 	{
 		loadimage(&img1, "./file/images/diamond_mask.png", size/4, size/4);
 		loadimage(&img2, "./file/images/diamond.png", size/4, size/4);
@@ -141,7 +141,7 @@ void Mine::M_loadimage()
 
 Mine::Mine()
 {
-	//¹¹Ôìº¯Êı£¬Ê¹ÓÃÁËÁ´±í±£Ö¤¿ó²Ø²»Òş²Ø
+	//æ„é€ å‡½æ•°ï¼Œä½¿ç”¨äº†é“¾è¡¨ä¿è¯çŸ¿è—ä¸éšè—
 	static Mine_Location* h = nullptr;
 	static Mine_Location* r = h;
 	Mine_Location* p = new Mine_Location;
@@ -160,7 +160,7 @@ Mine::Mine()
 	else
 	{
 		int count = 0;
-		//goto±ê¼Çµã
+		//gotoæ ‡è®°ç‚¹
 	create_xysize:
 		Mine_Location* s = h;
 		p->x = width / 256 * (rand() % (256 + 1));
@@ -170,11 +170,11 @@ Mine::Mine()
 		while (s->next != nullptr)
 		{
 			cout << "New linked list element is generating, "<<"count is "<<++count << endl;
-			//×ø±êÊÇ·ñÈ¡ÓÃµÄÅĞ¶ÏÌõ¼ş£¬Îª±£Ö¤¿ó²Ø²»Òş²Ø
+			//åæ ‡æ˜¯å¦å–ç”¨çš„åˆ¤æ–­æ¡ä»¶ï¼Œä¸ºä¿è¯çŸ¿è—ä¸éšè—
 			if (((p->x + p->size) >= s->x && (p->x <= (s->x + s->size))) && (((p->y + p->size) >= s->y && p->y <= (s->y + s->size))))
 			{
 				cout << "Build failed, start regenerate" << endl;
-				goto create_xysize;//ÖØĞÂ½øĞĞ¸³Öµ²¢±È½Ï
+				goto create_xysize;//é‡æ–°è¿›è¡Œèµ‹å€¼å¹¶æ¯”è¾ƒ
 			};
 			if (s != nullptr)s = s->next;
 		}
@@ -184,15 +184,15 @@ Mine::Mine()
 		y = p->y;
 		size = p->size;
 	};
-	//¿ØÖÆÌ¨´òÓ¡ĞÅÏ¢£¬²»Ó°ÏìÓÎÏ·£¨·´ÕıÒ²¹Ø²»µô¿ØÖÆÌ¨
+	//æ§åˆ¶å°æ‰“å°ä¿¡æ¯ï¼Œä¸å½±å“æ¸¸æˆï¼ˆåæ­£ä¹Ÿå…³ä¸æ‰æ§åˆ¶å°
 	cout << "X is " << x << "," << "Y is " << y << "," << "Its size is " << size << endl;
-	//¿óµÄÊıÁ¿¼ÆÁ¿
+	//çŸ¿çš„æ•°é‡è®¡é‡
 	static int Mine_count = 0;
 	Mine_count += 1;
 	cout << "Mine_count is " << Mine_count << endl;
-	//¿óµÄ¼ÛÖµ¸³Óè
+	//çŸ¿çš„ä»·å€¼èµ‹äºˆ
 	value = size * 10;
-	//¿óµÄ´æÔÚĞÔ¸³Óè
+	//çŸ¿çš„å­˜åœ¨æ€§èµ‹äºˆ
 	exist = true;
 	Mine::M_loadimage();
 	//BeginBatchDraw();
@@ -204,19 +204,19 @@ Mine::Mine()
 
 Mine::~Mine()
 {
-	//¿¼ÂÇÔÚÔö¼Ó¹Ø¿¨Ê±ÊµÏÖÎö¹¹º¯Êı
+	//è€ƒè™‘åœ¨å¢åŠ å…³å¡æ—¶å®ç°ææ„å‡½æ•°
 	cout << "Object has been deleted" << endl;
 }
 
 
-//¹³×Ó·½Ïò
+//é’©å­æ–¹å‘
 enum Hook_Direction
 {
 	left,
 	right
 };
 
-//¹³×Ó×´Ì¬
+//é’©å­çŠ¶æ€
 enum Hook_State
 {
 	normal,
@@ -224,22 +224,22 @@ enum Hook_State
 	shortening
 };
 
-//¿ó¹³ÀàĞÍ
+//çŸ¿é’©ç±»å‹
 class Hook
 {
-	//ÓÑÔªMineÀàĞÍ
+	//å‹å…ƒMineç±»å‹
 public: friend class Mine;
 public:
 	Hook();
 	~Hook();
-	//ÉùÃ÷Àà·½·¨
+	//å£°æ˜ç±»æ–¹æ³•
 	void H_Round(Hook* hook);
 	void H_Extending(Mine* mine, Hook* hook);
 	void drawline(Hook* hook);
 	void putsole();
 	bool collisiondetection(Mine* mine, Hook* hook);
 
-	//ÉùÃ÷¹«¿ªµÄ¶ÔÏóÄÚÈİ
+	//å£°æ˜å…¬å¼€çš„å¯¹è±¡å†…å®¹
 	Hook_Direction hook_direction;
 	double angle;
 	int ex;
@@ -249,20 +249,20 @@ public:
 	static int Hook_Speed;
 
 private:
-	//Ë½ÓĞÄÚÈİ
+	//ç§æœ‰å†…å®¹
 	int x;
 	int y;
 	IMAGE hookimage1, hookimage2;
 	IMAGE soleimage1, soleimage2;
 };
 
-//¿ó¹³ÀàµÄ¾²Ì¬±äÁ¿³õÊ¼»¯ÇøÓò
+//çŸ¿é’©ç±»çš„é™æ€å˜é‡åˆå§‹åŒ–åŒºåŸŸ
 int Hook::Hook_Speed = 4;
 
-//¿ó¹³ÀàµÄ¹¹Ôìº¯Êı
+//çŸ¿é’©ç±»çš„æ„é€ å‡½æ•°
 Hook::Hook()
 {
-	//³õÊ¼»¯¿ó¹³×´Ì¬
+	//åˆå§‹åŒ–çŸ¿é’©çŠ¶æ€
 	state = normal;
 	x = width / 2;
 	y = 120 - 20;
@@ -273,22 +273,22 @@ Hook::Hook()
 	ey = sin(angle) * length + y;
 	setlinecolor(BROWN);
 	setlinestyle(PS_COSMETIC, 5);
-	//³õÊ¼»¯¿óÉş
+	//åˆå§‹åŒ–çŸ¿ç»³
 	line(x, y, ex, ey);
-	//¼ÓÔØ¿ó¹¤Í¼Æ¬
+	//åŠ è½½çŸ¿å·¥å›¾ç‰‡
 	loadimage(&soleimage1, "./file/images/char1.jpg", width / 8, height / 8);
 	loadimage(&soleimage2, "./file/images/char1_mask.jpg", width / 8, height / 8);
 }
 
 Hook::~Hook()
 {
-	//Ã»ÓĞÓÃµ½¶ÑÇø£¬ÇÒ¿ó¹³¶ÔÏó»áÒ»Ö±´æÔÚ£¬ÎŞĞëµ¥¶ÀµÄÎö¹¹º¯Êı
+	//æ²¡æœ‰ç”¨åˆ°å †åŒºï¼Œä¸”çŸ¿é’©å¯¹è±¡ä¼šä¸€ç›´å­˜åœ¨ï¼Œæ— é¡»å•ç‹¬çš„ææ„å‡½æ•°
 }
 
-//Åö×²¼ì²âº¯Êı
+//ç¢°æ’æ£€æµ‹å‡½æ•°
 bool Hook::collisiondetection(Mine* mine, Hook* hook)
 {
-	if (mine->exist == true)//²»´æÔÚ¾Í²»»áÅö×²
+	if (mine->exist == true)//ä¸å­˜åœ¨å°±ä¸ä¼šç¢°æ’
 	{
 		if (hook->ex >= mine->x && hook->ex <= (mine->x + mine->size) && hook->ey >= mine->y && hook->ey <= (mine->y + mine->size))
 		{
@@ -303,28 +303,22 @@ bool Hook::collisiondetection(Mine* mine, Hook* hook)
 
 void Hook::H_Round(Hook* hook)
 {
-	//cout<<"angle is" << angle << endl;
-	//cout << "Direction is " << hook_direction << endl;
 	if (hook->state == normal) {
 		if (angle <= 10.0 / 180 * PI)
 		{
 			hook->hook_direction = Hook_Direction::left;
-			//cout << "l" << endl;
 		}
 		else if (angle >= PI - 10.0 / 180 * PI)
 		{
 			hook->hook_direction = Hook_Direction::right;
-			//cout << "r" << endl;
 		};
 		if (hook_direction == Hook_Direction::left)
 		{
 			hook->angle += PI / 128;
-			//cout << "+" << PI / 128 << endl;
 		}
 		else if (hook_direction == Hook_Direction::right)
 		{
 			hook->angle -= PI / 128;
-			//cout << "-" << PI / 128 << endl;
 		}
 		setlinecolor(BROWN);
 		setlinestyle(PS_COSMETIC, 5);
@@ -333,29 +327,28 @@ void Hook::H_Round(Hook* hook)
 		line(x, y, ex, ey);
 	};
 };
-//¿ó¹³Éì³¤µÄº¯Êı
+//çŸ¿é’©ä¼¸é•¿çš„å‡½æ•°
 void Hook::H_Extending(Mine* mine, Hook* hook)
 {
 	static int Extend_length;
 	static Mine hookmine;
-	//Extend_length = Hook::Hook_Speed;
-	if (hook->state == normal)//¿ó¹³²»Õı³£²»Ó¦µ±¶ÁÈ¡ĞÂµÄ×´Ì¬
+	if (hook->state == normal)//çŸ¿é’©ä¸æ­£å¸¸ä¸åº”å½“è¯»å–æ–°çš„çŠ¶æ€
 	{
-		if (GetAsyncKeyState(32) != 0&&hook->state==normal)//°´ÏÂ¿Õ¸ñ¿ªÊ¼Éì³¤
+		if (GetAsyncKeyState(32) != 0&&hook->state==normal)//æŒ‰ä¸‹ç©ºæ ¼å¼€å§‹ä¼¸é•¿
 		{
 			cout << "Starting move" << endl;
-			hook->state = extending;//¸Ä±ä×´Ì¬
+			hook->state = extending;//æ”¹å˜çŠ¶æ€
 			while (true)
 			{
 				Extend_length = Hook::Hook_Speed;
-				GetAsyncKeyState(32);/*×èÈû¿Õ¸ñ¼ü*/
-				GetAsyncKeyState(27);/*×èÈûESC¼ü*/
-				GetAsyncKeyState('P');/*×èÈûP¼ü*/
+				GetAsyncKeyState(32);/*é˜»å¡ç©ºæ ¼é”®*/
+				GetAsyncKeyState(27);/*é˜»å¡ESCé”®*/
+				GetAsyncKeyState('P');/*é˜»å¡Pé”®*/
 				Sleep(1);
 				BeginBatchDraw();
 				if (hook->state == extending)
 				{
-					//»æÖÆ
+					//ç»˜åˆ¶
 					hook->length += Extend_length;
 					hook->drawline(hook);
 					putbackgraound();
@@ -363,7 +356,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					hook->drawline(hook);
 					mine->M_Putimages(mine, Mine_Quantity);
 				};
-				//Åö×²µ½¿ó²ØÊ±¿ó¹³Ëõ¶Ì
+				//ç¢°æ’åˆ°çŸ¿è—æ—¶çŸ¿é’©ç¼©çŸ­
 				for (int i = 0; i < Mine_Quantity; i++)
 				{
 					if (hook->collisiondetection(mine + i, hook) == true)
@@ -378,13 +371,13 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					};
 					(mine + i)->M_Putimage(mine + i);
 				};
-				//Åö×²µ½±ß½çÊ±¿ó¹³Ëõ¶Ì
+				//ç¢°æ’åˆ°è¾¹ç•Œæ—¶çŸ¿é’©ç¼©çŸ­
 				if (hook->ex <= 0 || hook->ex >= width || hook->ey <= hook->y || hook->ey >= height)
 				{
 					hook->state = shortening;
 					cout << "hook->state = shortening;" << hook->state << " 2" << endl;
 				};
-				//¿ó¹³Ëõ¶ÌÊ±µÄ»­Ãæ»æÖÆ
+				//çŸ¿é’©ç¼©çŸ­æ—¶çš„ç”»é¢ç»˜åˆ¶
 				if (hook->state == shortening)
 				{
 					putbackgraound();
@@ -410,7 +403,8 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 		};
 	};
 }
-//»­Ïßº¯Êı
+
+//ç”»çº¿å‡½æ•°
 void Hook::drawline(Hook* hook)
 {
 	Hook::putsole();
@@ -420,26 +414,26 @@ void Hook::drawline(Hook* hook)
 	hook->ey = sin(hook->angle) * hook->length + hook->y;
 	line(hook->x, hook->y, hook->ex, hook->ey);
 }
-//·ÅÖÃ¿ó¹¤Í¼Ïñ
+//æ”¾ç½®çŸ¿å·¥å›¾åƒ
 void Hook::putsole()
 {
 	putimage(width / 2-20, 60-5, &soleimage2, SRCPAINT);
 	putimage(width / 2-20, 60-5, &soleimage1, SRCAND);
 }
-//·ÅÖÃÍË³öÌáĞÑµÄÎÄ×Ö
+//æ”¾ç½®é€€å‡ºæé†’çš„æ–‡å­—
 void put_exitReminder()
 {
 	setbkmode(TRANSPARENT);
 	settextcolor(BLUE);
-	settextstyle(width / 24, height / 32, _T("ËÎÌå"));
+	settextstyle(width / 24, height / 32, _T("å®‹ä½“"));
 	static TCHAR reminder1[50];
 	static TCHAR reminder2[50];
-	sprintf_s(reminder1, _T("°´ESC¼üÍË³öÓÎÏ·"));
-	sprintf_s(reminder2, _T("°´P¼ü½øÈëÉÌµê"));
+	sprintf_s(reminder1, _T("æŒ‰ESCé”®é€€å‡ºæ¸¸æˆ"));
+	sprintf_s(reminder2, _T("æŒ‰Pé”®è¿›å…¥å•†åº—"));
 	outtextxy(width / 16 * 11, 0, reminder1);
 	outtextxy(width / 16 * 11, height / 16, reminder2);
 }
-//·ÅÖÃ½çÃæÔªËØ
+//æ”¾ç½®ç•Œé¢å…ƒç´ 
 void putinterface(Mine *mine,Hook *hook)
 {
 	BeginBatchDraw();
@@ -453,13 +447,13 @@ void putinterface(Mine *mine,Hook *hook)
 	EndBatchDraw();
 }
 
-enum liquidtype//Ò©Ë®
+enum liquidtype//è¯æ°´
 {
-	s_super = 16,//³¬´óÁ¦Ò©Ë®
-	super = 8,//´óÁ¦Ò©Ë®
-	norm=4,//ÆÕÍ¨Ò©Ë®
-	slow = 2,//»ºÂıÒ©Ë®
-	s_slow = 1,//³¬»ºÂıÒ©Ë®
+	s_super = 16,//è¶…å¤§åŠ›è¯æ°´
+	super = 8,//å¤§åŠ›è¯æ°´
+	norm=4,//æ™®é€šè¯æ°´
+	slow = 2,//ç¼“æ…¢è¯æ°´
+	s_slow = 1,//è¶…ç¼“æ…¢è¯æ°´
 };
 
 struct Liquid
@@ -474,16 +468,16 @@ struct Liquid
 IMAGE shopbkimg;
 IMAGE LiquidIMG[Liquid_Quantity];
 
-void shopinit()//ÉÌµê³õÊ¼»¯
+void shopinit()//å•†åº—åˆå§‹åŒ–
 {
-	loadimage(&shopbkimg, "./file/images/shop.png", width, height);//ÉÌµê±³¾°
+	loadimage(&shopbkimg, "./file/images/shop.png", width, height);//å•†åº—èƒŒæ™¯
 	loadimage(&LiquidIMG[0], "./file/images/liquid.jpg", liquid[0].size, liquid[0].size);
 	loadimage(&LiquidIMG[1], "./file/images/liquid2.jpg", liquid[1].size, liquid[1].size);
 	loadimage(&LiquidIMG[2], "./file/images/liquid3.jpg", liquid[2].size, liquid[2].size);
-	for (int i = 0; i < 3; i++)//³õÊ¼»¯Ò©Ë®Î»ÖÃ-------ĞèÒªµ÷½Ú
+	for (int i = 0; i < 3; i++)//åˆå§‹åŒ–è¯æ°´ä½ç½®-------éœ€è¦è°ƒèŠ‚
 	{
-		liquid[i].x = 165 + i * 175;
-		liquid[i].y = 355;
+		liquid[i].x = width / 8 + 2 * i * width / 8;
+		liquid[i].y = height / 2;
 	}
 	//srand(GetTickCount());
 	for (int i = 0; i < Liquid_Quantity; i++)
@@ -492,27 +486,26 @@ void shopinit()//ÉÌµê³õÊ¼»¯
 		switch (liquidtypeswitch)
 		{
 		case 1:
-			liquid[i].type = s_super;
+			liquid[i].type = liquidtype::s_super;
 			break;
 		case 2:
-			liquid[i].type = super;
+			liquid[i].type = liquidtype::super;
 			break;
 		case 3:
-			liquid[i].type = norm;
+			liquid[i].type = liquidtype::norm;
 			break;
 		case 4:
-			liquid[i].type = s_slow;
+			liquid[i].type = liquidtype::s_slow;
 			break;
 		case 5:
-			liquid[i].type = slow;
+			liquid[i].type = liquidtype::slow;
 			break;
 		}
-		//liquid[i].type = rand() % 4 + 1;
 		liquid[i].flag = true;
 	}
 }
 
-//ÉÌµêº¯Êı
+//å•†åº—å‡½æ•°
 void shopping()
 {
 	//sole.state = 0;
@@ -522,51 +515,57 @@ void shopping()
 	MOUSEMSG shopm;
 	while (1)
 	{
-		GetAsyncKeyState('P');/*×èÈûP¼ü*/
-		GetAsyncKeyState(27);/*×èÈûESC¼ü*/
-		GetAsyncKeyState(32);/*×èÈû¿Õ¸ñ¼ü*/
+		GetAsyncKeyState('P');/*é˜»å¡Pé”®*/
+		GetAsyncKeyState(27);/*é˜»å¡ESCé”®*/
+		GetAsyncKeyState(32);/*é˜»å¡ç©ºæ ¼é”®*/
 		putimage(0, 0, &shopbkimg);
-		char score2[30] = "";//·ÖÊı
-		sprintf_s(score2, "·ÖÊı:%d", Mine::getValeSum());
-		settextcolor(WHITE);//×ÖÌåÑÕÉ«
-		setbkmode(TRANSPARENT);//±³¾°Í¸Ã÷»¯
-		settextstyle(50, 0, "ºÚÌå");
+		char score2[30] = "";//åˆ†æ•°
+		sprintf_s(score2, "åˆ†æ•°:%d", Mine::getValeSum());
+		settextcolor(WHITE);//å­—ä½“é¢œè‰²
+		setbkmode(TRANSPARENT);//èƒŒæ™¯é€æ˜åŒ–
+		settextstyle(50, 0, "é»‘ä½“");
 		outtextxy(20, 20, score2);
 		for (int i = 0; i < Liquid_Quantity; i++)
 		{
 			if (liquid[i].flag == true)
 			{
 				putimage(liquid[i].x, liquid[i].y, &LiquidIMG[i]);
+				char Cost[30];//åˆ†æ•°
+				settextcolor(RED);//å­—ä½“é¢œè‰²
+				setbkmode(TRANSPARENT);//èƒŒæ™¯é€æ˜åŒ–
+				settextstyle(25, 25, "é»‘ä½“");
+				sprintf_s(Cost, "200å…ƒ");
+				outtextxy(width / 8 + 2 * i * width / 8, height / 3 * 2, Cost);
 			}
 			if (type != 0)
 			{
-				char name[50] = " ";//Ò©Ë®Ãû×Ö
+				char name[50] = " ";//è¯æ°´åå­—
 				switch (type)
 				{
 				case s_super:
-					sprintf_s(name, "Äú»ñµÃ³¬¡¤´óÁ¦Ò©Ë®£¬¹³×ÓËÙ¶ÈÏÔÖø¼Ó¿ì!");
+					sprintf_s(name, "æ‚¨è·å¾—è¶…Â·å¤§åŠ›è¯æ°´ï¼Œé’©å­é€Ÿåº¦æ˜¾è‘—åŠ å¿«!");
 					break;
 				case super:
-					sprintf_s(name, "Äú»ñµÃ´óÁ¦Ò©Ë®,¹³×ÓËÙ¶È¼Ó¿ì!");
+					sprintf_s(name, "æ‚¨è·å¾—å¤§åŠ›è¯æ°´,é’©å­é€Ÿåº¦åŠ å¿«!");
 					break;
 				case s_slow:
-					sprintf_s(name, "Äú»ñµÃ³¬¡¤»ºÂıÒ©Ë®,¹³×ÓËÙ¶ÈÏÔÖø¼õÂı!");
+					sprintf_s(name, "æ‚¨è·å¾—è¶…Â·ç¼“æ…¢è¯æ°´,é’©å­é€Ÿåº¦æ˜¾è‘—å‡æ…¢!");
 					break;
 				case slow:
-					sprintf_s(name, "Äú»ñµÃ»ºÂıÒ©Ë®£¬¹³×ÓËÙ¶È¼õÂı!");
+					sprintf_s(name, "æ‚¨è·å¾—ç¼“æ…¢è¯æ°´ï¼Œé’©å­é€Ÿåº¦å‡æ…¢!");
 					break;
 				case norm:
-					sprintf_s(name, "Äú»ñµÃÆÕÍ¨Ò©Ë®£¬Çå³ı¸ºÃæ£¨ºÍÕıÃæ£©Ğ§¹û!");
+					sprintf_s(name, "æ‚¨è·å¾—æ™®é€šè¯æ°´ï¼Œæ¸…é™¤è´Ÿé¢ï¼ˆå’Œæ­£é¢ï¼‰æ•ˆæœ!");
 					break;
 				}
-				settextcolor(RED);//×ÖÌåÑÕÉ«
-				setbkmode(TRANSPARENT);//±³¾°Í¸Ã÷»¯
-				settextstyle(50, 0, "ºÚÌå");
+				settextcolor(RED);//å­—ä½“é¢œè‰²
+				setbkmode(TRANSPARENT);//èƒŒæ™¯é€æ˜åŒ–
+				settextstyle(50, 0, "é»‘ä½“");
 				outtextxy(100, 550, name);
 			}
 		}
 		shopm = GetMouseMsg();
-		int Cost = 200;/*Ò©Ë®¼Û¸ñ*/
+		int Cost = 200;/*è¯æ°´ä»·æ ¼*/
 		if (shopm.uMsg == WM_LBUTTONDOWN)
 		{
 			if ((shopm.x > liquid[0].x && shopm.x < (liquid[0].x + liquid[0].size)) && (shopm.y > liquid[0].y && shopm.y < (liquid[0].y + liquid[0].size)))
@@ -574,7 +573,7 @@ void shopping()
 				
 				if(Mine::Value_Sum >= Cost)
 				{
-					//mciSendString("play shopmusic.mp3", NULL, 0, NULL);//ÒôĞ§
+					//mciSendString("play shopmusic.mp3", NULL, 0, NULL);//éŸ³æ•ˆ
 					Hook::Hook_Speed = liquid[0].type;
 					liquid[0].flag = false;
 					type = liquid[0].type;
@@ -623,13 +622,10 @@ void Ending()
 	putimage(0, 0, &end);
 	setbkmode(TRANSPARENT);
 	settextcolor(BLUE);
-	settextstyle(width / 24, height / 32, _T("ËÎÌå"));
+	settextstyle(width / 24, height / 32, _T("å®‹ä½“"));
 	static TCHAR reminder1[50];
-	//static TCHAR reminder2[50];
-	sprintf_s(reminder1, _T("°´ESC¼üÍË³öÓÎÏ·"));
-	//sprintf_s(reminder2, _T("°´P¼ü½øÈëÉÌµê"));
+	sprintf_s(reminder1, _T("æŒ‰ESCé”®é€€å‡ºæ¸¸æˆ"));
 	outtextxy(width / 16 * 11, 0, reminder1);
-	//outtextxy(width / 16 * 11, height / 16, reminder2);
 	while (true)
 	{
 		if (GetAsyncKeyState(27) != 0)
@@ -639,12 +635,12 @@ void Ending()
 	};
 };
 
-//Ö÷ÓÎÏ·º¯Êı
+//ä¸»æ¸¸æˆå‡½æ•°
 int GoldMiner()
 {
-	srand((unsigned)time(NULL));//Éú³ÉËæ»úÊıÖÖ×Ó
+	srand((unsigned)time(NULL));//ç”Ÿæˆéšæœºæ•°ç§å­
 	initgraph(width, height);
-	//Éú³ÉÀà¶ÔÏó
+	//ç”Ÿæˆç±»å¯¹è±¡
 	BeginBatchDraw();
 	Mine mine[Mine_Quantity];
 	Hook hook;
@@ -671,7 +667,7 @@ int GoldMiner()
 	return 0;
 };
 
-//Ë«»÷¼ì²âµÄº¯Êı
+//åŒå‡»æ£€æµ‹çš„å‡½æ•°
 void DoubleTick_Detection(int *flag)
 {
 	static int g_clickCount = 0;
@@ -684,7 +680,7 @@ void DoubleTick_Detection(int *flag)
 			current_time = GetTickCount();
 			if (current_time - g_lastClickTime < 500 && current_time - g_lastClickTime > 50)
 			{ 
-				// Ë«»÷µÄÊ±¼ä¼ä¸ô£¬ÕâÀïÉèÖÃÎª500ºÁÃë
+				// åŒå‡»çš„æ—¶é—´é—´éš”ï¼Œè¿™é‡Œè®¾ç½®ä¸º500æ¯«ç§’
 				cout << "current_time is: " << current_time << endl << "g_lastClickTime is: " << g_lastClickTime << endl;
 				g_clickCount++;
 			}
@@ -695,12 +691,11 @@ void DoubleTick_Detection(int *flag)
 		}
 
 		g_lastClickTime = current_time;
-		//g_lastClickTime = GetTickCount();
 		if (g_clickCount == 2) {
-			// Ë«»÷ÊÂ¼ş´¦Àí
+			// åŒå‡»äº‹ä»¶å¤„ç†
 			std::cout << "Double click detected! " << "g_clickCount is: " << g_clickCount << std::endl;
 			*flag = 1;
-			// ÖØÖÃµã»÷¼ÆÊı
+			// é‡ç½®ç‚¹å‡»è®¡æ•°
 			g_clickCount = 0;
 			std::cout << "g_clickCount is: " << g_clickCount << std::endl;
 		}
