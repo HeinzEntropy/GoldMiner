@@ -15,6 +15,8 @@ using namespace std;
 #define Liquid_Quantity 3
 #define Mine_Quantity 18
 
+bool* flag = new bool;//双击检测旗帜
+
 //矿藏的坐标结构体
 typedef struct mine_location{
 	int x;
@@ -350,6 +352,13 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 				{
 					//绘制
 					hook->length += Extend_length;
+					if (*flag == true && (Hook::Hook_Speed == 1 || Hook::Hook_Speed == 2))
+					{
+						hook->length += 4 * Extend_length;
+						cout << "Because your Hook::Hook_Speed is: " << Hook::Hook_Speed << endl;
+						cout << "Now hook->length additionally += " << 4 * Extend_length << ";" << endl;
+						*flag = false;
+					};
 					hook->drawline(hook);
 					putbackgraound();
 					hook->H_Round(hook);
@@ -387,9 +396,17 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					hookmine.x = ex - hookmine.size / 2;
 					hookmine.y = ey - hookmine.size / 2;
 					hookmine.M_Putimage(&hookmine);
-					hook->length -= Extend_length;
-					cout << "Hook::Hook_Speed is: " << Hook::Hook_Speed << endl;
-					cout << "hook->length -= " << Extend_length << ";" << endl;
+ 					hook->length -= Extend_length;
+					if (*flag == true && (Hook::Hook_Speed == 1 || Hook::Hook_Speed == 2))
+					{
+						hook->length -= 4 * Extend_length;
+						cout << "Because your Hook::Hook_Speed is: " << Hook::Hook_Speed << endl;
+						cout << "Now hook->length additionally -= " << 4 * Extend_length << ";" << endl;
+						*flag = false;
+					};
+					//cout << "Hook::Hook_Speed is: " << Hook::Hook_Speed << endl;
+					//cout << "hook->length -= " << Extend_length << ";" << endl;
+
 					if (hook->length <= width / 16)
 					{
 						hookmine.exist = false;
@@ -618,7 +635,7 @@ void shopping()
 void Ending()
 {
 	IMAGE end;
-	loadimage(&end, "./file/images/over.png", width, height);
+	loadimage(&end, "./file/images/clear.png", width, height);
 	putimage(0, 0, &end);
 	setbkmode(TRANSPARENT);
 	settextcolor(BLUE);
@@ -668,7 +685,7 @@ int GoldMiner()
 };
 
 //双击检测的函数
-void DoubleTick_Detection(int *flag)
+void DoubleTick_Detection(bool *flag)
 {
 	static int g_clickCount = 0;
 	static DWORD g_lastClickTime = 0;
@@ -686,7 +703,7 @@ void DoubleTick_Detection(int *flag)
 			}
 			else {
 				g_clickCount = 1;
-				*flag = 0;
+				//*flag = 0;
 			}
 		}
 
@@ -694,9 +711,9 @@ void DoubleTick_Detection(int *flag)
 		if (g_clickCount == 2) {
 			// 双击事件处理
 			std::cout << "Double click detected! " << "g_clickCount is: " << g_clickCount << std::endl;
-			*flag = 1;
+			*flag = true;
 			// 重置点击计数
-			g_clickCount = 0;
+ 			g_clickCount = 0;
 			std::cout << "g_clickCount is: " << g_clickCount << std::endl;
 		}
 		if (GetAsyncKeyState(27) != 0)
@@ -706,11 +723,10 @@ void DoubleTick_Detection(int *flag)
 	}
 	return;
 }
-int *flag = new int;
 
 int main()
 {
-	*flag = 0;
+	*flag = false;
 	thread t1(DoubleTick_Detection,flag);
 	GoldMiner();
 	t1.join();
