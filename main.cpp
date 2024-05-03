@@ -4,6 +4,7 @@
 #include<cstdlib>
 #include<ctime>
 #include<thread>
+#include<mutex>
 #include<Windows.h>
 
 using namespace std;
@@ -15,7 +16,8 @@ using namespace std;
 #define Liquid_Quantity 3
 #define Mine_Quantity 18
 
-bool* flag = new bool;//双击检测旗帜
+bool* doubleflag = new bool;//双击检测旗帜
+std::mutex mtx;
 
 //矿藏的坐标结构体
 typedef struct mine_location{
@@ -31,12 +33,12 @@ void putbackgraound()
 	setfillcolor(YELLOW);
 	setlinecolor(YELLOW);
 	fillrectangle(0, 0, width, 120);
-	static bool flag = true;
+	static bool bgflag = true;
 	static IMAGE backgroundimage;
-	if (flag == true)
+	if (bgflag == true)
 	{
 		loadimage(&backgroundimage, "./file/images/level-background-0.jpg", width, height / 16 * 14);
-		flag = false;
+		bgflag = false;
 	};
 	putimage(0, 120, &backgroundimage);
 }
@@ -61,6 +63,8 @@ public:
 private:
 	//创建精灵图和掩码图
 	IMAGE img1,img2;
+	//链表头结点
+	static Mine_Location* h;
 	//坐标及其大小
 	int x;
 	int y;
@@ -74,6 +78,7 @@ private:
 };
 //Mine类的静态变量集中初始化区
 int Mine::Value_Sum = 0;
+Mine_Location* Mine::h = nullptr;
 
 int Mine::getValeSum()
 {
@@ -126,7 +131,7 @@ void Mine::M_loadimage()
 {
 	//加载照片
 	cout <<"M_loadimage:" << "size is " << size << endl;
-	if (Mine::value <=1000)//较低价值加载金矿
+	if (Mine::value <=100)//较低价值加载金矿
 	{
 		loadimage(&img1, "./file/images/small_gold_mask.bmp", size, size);
 		loadimage(&img2, "./file/images/small_gold.bmp", size, size);
@@ -143,8 +148,10 @@ void Mine::M_loadimage()
 
 Mine::Mine()
 {
+	mtx.lock();
 	//构造函数，使用了链表保证矿藏不隐藏
-	static Mine_Location* h = nullptr;
+	static int a = 1;
+	cout << "a is " << a++ << endl;
 	static Mine_Location* r = h;
 	Mine_Location* p = new Mine_Location;
 	if (h == nullptr)
@@ -171,7 +178,7 @@ Mine::Mine()
 		p->next = nullptr;
 		while (s->next != nullptr)
 		{
-			cout << "New linked list element is generating, "<<"count is "<<++count << endl;
+			cout << "New linked list element is generating, " << "count is " << ++count << endl;
 			//坐标是否取用的判断条件，为保证矿藏不隐藏
 			if (((p->x + p->size) >= s->x && (p->x <= (s->x + s->size))) && (((p->y + p->size) >= s->y && p->y <= (s->y + s->size))))
 			{
@@ -185,7 +192,7 @@ Mine::Mine()
 		x = p->x;
 		y = p->y;
 		size = p->size;
-	};
+	}
 	//控制台打印信息，不影响游戏（反正也关不掉控制台
 	cout << "X is " << x << "," << "Y is " << y << "," << "Its size is " << size << endl;
 	//矿的数量计量
@@ -193,7 +200,7 @@ Mine::Mine()
 	Mine_count += 1;
 	cout << "Mine_count is " << Mine_count << endl;
 	//矿的价值赋予
-	value = size * 10;
+	value = size;
 	//矿的存在性赋予
 	exist = true;
 	Mine::M_loadimage();
@@ -202,13 +209,27 @@ Mine::Mine()
 	putimage(x, y, &img2, SRCAND);
 	//EndBatchDraw();
 	cout << "Object has been created" << endl;
+	mtx.unlock();
 }
 
 Mine::~Mine()
 {
-	//考虑在增加关卡时实现析构函数
+	mtx.lock();
+	int count = 1;
+	while (Mine::h != nullptr)
+	{
+		Mine_Location* s = h;
+		{
+			h = h->next;
+			std::cout << "Deleting the list of serial: " << count++ << std::endl;
+			delete s;
+		}
+	}
+	h = new Mine_Location;
+	h->next = nullptr;
 	cout << "Object has been deleted" << endl;
-}
+	mtx.unlock();
+};
 
 
 //钩子方向
@@ -334,6 +355,7 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 {
 	static int Extend_length;
 	static Mine hookmine;
+	hookmine.exist = false;
 	if (hook->state == normal)//矿钩不正常不应当读取新的状态
 	{
 		if (GetAsyncKeyState(32) != 0&&hook->state==normal)//按下空格开始伸长
@@ -352,12 +374,12 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 				{
 					//绘制
 					hook->length += Extend_length;
-					if (*flag == true && (Hook::Hook_Speed == 1 || Hook::Hook_Speed == 2))
+					if (*doubleflag == true && (Hook::Hook_Speed == 1 || Hook::Hook_Speed == 2))
 					{
 						hook->length += 4 * Extend_length;
 						cout << "Because your Hook::Hook_Speed is: " << Hook::Hook_Speed << endl;
 						cout << "Now hook->length additionally += " << 4 * Extend_length << ";" << endl;
-						*flag = false;
+						*doubleflag = false;
 					};
 					hook->drawline(hook);
 					putbackgraound();
@@ -397,12 +419,12 @@ void Hook::H_Extending(Mine* mine, Hook* hook)
 					hookmine.y = ey - hookmine.size / 2;
 					hookmine.M_Putimage(&hookmine);
  					hook->length -= Extend_length;
-					if (*flag == true && (Hook::Hook_Speed == 1 || Hook::Hook_Speed == 2))
+					if (*doubleflag == true && (Hook::Hook_Speed == 1 || Hook::Hook_Speed == 2))
 					{
 						hook->length -= 4 * Extend_length;
 						cout << "Because your Hook::Hook_Speed is: " << Hook::Hook_Speed << endl;
 						cout << "Now hook->length additionally -= " << 4 * Extend_length << ";" << endl;
-						*flag = false;
+						*doubleflag = false;
 					};
 					//cout << "Hook::Hook_Speed is: " << Hook::Hook_Speed << endl;
 					//cout << "hook->length -= " << Extend_length << ";" << endl;
@@ -473,15 +495,17 @@ enum liquidtype//药水
 	s_slow = 1,//超缓慢药水
 };
 
-struct Liquid
+typedef struct liquid
 {
 	int x;
 	int y;
 	int size = 120;
 	bool flag;
 	int type;
-}liquid[Liquid_Quantity];
+	struct liquid* next;
+}LIQUID;
 
+LIQUID liquid[Liquid_Quantity];
 IMAGE shopbkimg;
 IMAGE LiquidIMG[Liquid_Quantity];
 
@@ -556,7 +580,7 @@ void shopping()
 			}
 			if (type != 0)
 			{
-				char name[50] = " ";//药水名字
+				char name[75] = " ";//药水名字
 				switch (type)
 				{
 				case s_super:
@@ -566,10 +590,10 @@ void shopping()
 					sprintf_s(name, "您获得大力药水,钩子速度加快!");
 					break;
 				case s_slow:
-					sprintf_s(name, "您获得超·缓慢药水,钩子速度显著减慢!");
+					sprintf_s(name, "您获得超·缓慢药水,钩子速度显著减慢!但您可以双击加速");
 					break;
 				case slow:
-					sprintf_s(name, "您获得缓慢药水，钩子速度减慢!");
+					sprintf_s(name, "您获得缓慢药水，钩子速度减慢!但您可以双击加速");
 					break;
 				case norm:
 					sprintf_s(name, "您获得普通药水，清除负面（和正面）效果!");
@@ -577,8 +601,8 @@ void shopping()
 				}
 				settextcolor(RED);//字体颜色
 				setbkmode(TRANSPARENT);//背景透明化
-				settextstyle(50, 0, "黑体");
-				outtextxy(100, 550, name);
+				settextstyle(30, 0, "黑体");
+				outtextxy(75, 650, name);
 			}
 		}
 		shopm = GetMouseMsg();
@@ -677,6 +701,7 @@ int GoldMiner()
 		};
 		if (mine->M_Runout(mine)==true)
 		{
+			delete[]mine;
 			Ending();
 			break;
 		}
@@ -685,8 +710,9 @@ int GoldMiner()
 };
 
 //双击检测的函数
-void DoubleTick_Detection(bool *flag)
+void DoubleTick_Detection(bool *doubleflag)
 {
+	//mtx.lock();
 	static int g_clickCount = 0;
 	static DWORD g_lastClickTime = 0;
 	DWORD current_time = 0;
@@ -711,7 +737,7 @@ void DoubleTick_Detection(bool *flag)
 		if (g_clickCount == 2) {
 			// 双击事件处理
 			std::cout << "Double click detected! " << "g_clickCount is: " << g_clickCount << std::endl;
-			*flag = true;
+			*doubleflag = true;
 			// 重置点击计数
  			g_clickCount = 0;
 			std::cout << "g_clickCount is: " << g_clickCount << std::endl;
@@ -721,13 +747,14 @@ void DoubleTick_Detection(bool *flag)
 			break;
 		};
 	}
+	//mtx.unlock();
 	return;
 }
 
 int main()
 {
-	*flag = false;
-	thread t1(DoubleTick_Detection,flag);
+	*doubleflag = false;
+	thread t1(DoubleTick_Detection,doubleflag);
 	GoldMiner();
 	t1.join();
 }
