@@ -25,7 +25,7 @@ typedef struct mine_location{
 	int y;
 	int size;
 	struct mine_location * next;
-}Mine_Location;
+}Mine;
 
 //加载背景
 void putbackgraound()
@@ -57,14 +57,14 @@ public:
 	static int Value_Sum;
 	static int getValeSum();
 	static void putValueSum();
-	void M_Putimages(Mine* mine, int M_quantity);
+	void M_Putimages(Mine* mine);
 	bool M_Runout(Mine* mine);
 
 private:
 	//创建精灵图和掩码图
 	IMAGE img1,img2;
 	//链表头结点
-	static Mine_Location* h;
+	static Mine* h;
 	//坐标及其大小
 	int x;
 	int y;
@@ -75,10 +75,12 @@ private:
 	bool exist;
 	//矿是不是被勾住了
 	bool bandage;
+	//下一个节点
+	Mine* next;
 };
 //Mine类的静态变量集中初始化区
 int Mine::Value_Sum = 0;
-Mine_Location* Mine::h = nullptr;
+Mine* Mine::h = nullptr;
 
 int Mine::getValeSum()
 {
@@ -95,25 +97,27 @@ void Mine::putValueSum()
 	outtextxy(0, 0, ValueSum);
 }
 
-void Mine::M_Putimages(Mine* mine, int M_quantity)
+void Mine::M_Putimages(Mine* mine)
 {
-	for (int i = 0; i < M_quantity; i++)
+	Mine* now = mine;
+	while (now != nullptr)
 	{
-		(mine + i)->M_Putimage(mine + i);
+		now->M_Putimage(now);
+		now = now->next;
 	};
+	return;
 }
 
 bool Mine::M_Runout(Mine* mine)
 {
-	for (int i = 0; i < Mine_Quantity; i++)
+	if (Mine::h==nullptr)
 	{
-		if (((mine+i)->exist) == true)
-		{
-			//cout << "循环次数" << i << endl;
-			return false;
-		};
-	};
-	return true;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 //重新放置照片
@@ -152,8 +156,8 @@ Mine::Mine()
 	//构造函数，使用了链表保证矿藏不隐藏
 	static int a = 1;
 	cout << "a is " << a++ << endl;
-	static Mine_Location* r = h;
-	Mine_Location* p = new Mine_Location;
+	static Mine* r = h;
+	Mine* p = new Mine;
 	if (h == nullptr)
 	{
 		p->x = width / 256 * (rand() % (256 + 1));
@@ -171,7 +175,7 @@ Mine::Mine()
 		int count = 0;
 		//goto标记点
 	create_xysize:
-		Mine_Location* s = h;
+		Mine* s = h;
 		p->x = width / 256 * (rand() % (256 + 1));
 		p->y = height / 256 * (rand() % (256 - 16 * 3 + 1)) + height / 16 * 4;
 		p->size = width / 128 * (rand() % (16 + 1)) + width / 32;
@@ -218,14 +222,14 @@ Mine::~Mine()
 	int count = 1;
 	while (Mine::h != nullptr)
 	{
-		Mine_Location* s = h;
+		Mine* s = h;
 		{
 			h = h->next;
 			std::cout << "Deleting the list of serial: " << count++ << std::endl;
 			delete s;
 		}
 	}
-	h = new Mine_Location;
+	h = new Mine;
 	h->next = nullptr;
 	cout << "Object has been deleted" << endl;
 	mtx.unlock();
