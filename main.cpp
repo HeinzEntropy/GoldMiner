@@ -101,6 +101,7 @@ void Mine::M_Putimages(Mine* mine, int M_quantity)
 	{
 		(mine + i)->M_Putimage(mine + i);
 	};
+	return;
 }
 
 bool Mine::M_Runout(Mine* mine)
