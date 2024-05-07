@@ -701,7 +701,6 @@ int GoldMiner()
 		};
 		if (mine->M_Runout(mine)==true)
 		{
-			delete[]mine;
 			Ending();
 			break;
 		}
